@@ -1,27 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <router-view></router-view>
+    <!-- {{ this.setWeb3() }} -->
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+/* eslint-disable no-console */
+import getWeb3 from "./utils/getWeb3";
+import Factory from "./contracts/Factory.json";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "app",
-  components: {
-    HelloWorld
+  components: {},
+  computed: { ...mapState("contract", ["web3"]) },
+  methods: {
+    ...mapActions("contract", ["setWeb3"])
+  },
+  async created() {
+    const web3 = await getWeb3();
+    let factoryAddress = Factory.networks[89].address;
+    let factory = new web3.eth.Contract(Factory.abi, factoryAddress, {
+      transactionConfirmationBlocks: 1
+    });
+    this.setWeb3(factory);
   }
 };
 </script>
-
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
