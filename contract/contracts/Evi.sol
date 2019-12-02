@@ -1,5 +1,4 @@
 pragma solidity >=0.5.0 <0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "chainlink/v0.5/contracts/ChainlinkClient.sol";
 import "chainlink/v0.5/contracts/vendor/Ownable.sol";
@@ -9,8 +8,42 @@ import {
 
 contract Evi is ChainlinkClient, Ownable {
     using SafeMath_Chainlink for uint256;
+    uint256 constant private ORACLE_PAYMENT = 1 * LINK;
+    bool public expired = false;
+    bool public paid = false;
 
-    constructor(address _link, address _oracle, bytes32 _jobId) public {
+    address public buyer;
+    string  public insuranceId;
+    uint256 public price;
+    uint256 public insuranceType;
+    uint256 public startingTime;
+    uint256 public endingTime;
+    uint256 public deploymentTime;
+
+
+    event successNodeResponse(
+      bool success
+    );
+
+    constructor(
+      address _buyer,
+      string memory _insuranceId,
+      uint256 _price,
+      uint256 _insuranceType,
+      uint256 _startingTime,
+      uint256 _endingTime,
+      string memory _jobId,
+      address _oracle,
+      address _link ) public payable {
+
+      buyer = _buyer;
+      insuranceId = _insuranceId;
+      price = _price;
+      insuranceType = _insuranceType;
+      startingTime = _startingTime;
+      endingTime = _endingTime;
+      deploymentTime = block.timestamp;
+
       if (_link == address(0)) {
         setPublicChainlinkToken();
         setChainlinkOracle(_oracle);
@@ -20,29 +53,13 @@ contract Evi is ChainlinkClient, Ownable {
       }
     }
 
-    /**
-     * @notice Creates a request to the specified Oracle contract address
-     * @dev This function ignores the stored Oracle contract address and
-     * will instead send the request to the address specified
-     * @param _url The URL to fetch data from
-     * @param _path The dot-delimited path to parse of the response
-     * @param _callbackFn The callback function to call once request is processed
-     */
-    function createRequestTo(
-        string memory _url,
-        string memory _path,
-        bytes4 _callbackFn
-    ) private returns (bytes32 requestId) {
-        Chainlink.Request memory req = buildChainlinkRequest(
-            jobId,
-            address(this),
-            _callbackFn
-        );
-        req.add("url", _url);
-        req.add("path", _path);
-        requestId = sendChainlinkRequest(req, payment);
+    modifier buyerContract(){
+        require(address(this) == msg.sender || buyer == msg.sender,"Unauthorised , must be buyer");
+        _;
     }
 
-    function() external payable {}
+    function fulfillNodeRequest(bytes32 _requestId, bool paid) public recordChainlinkFulfillment(_requestId) {
+        emit successNodeResponse(true);
+    }
 
 }
