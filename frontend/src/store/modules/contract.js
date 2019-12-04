@@ -12,8 +12,15 @@ const mutations = {
 };
 
 const actions = {
+<<<<<<< HEAD
   async setWeb3({ commit }) {
     commit('setWeb3', await getWeb3());
+=======
+  async setWeb3({ commit }, web3) {
+    commit('setWeb3', () => web3);
+    let test = await state.web3().eth.getAccounts();
+    console.log(test);
+>>>>>>> feat: change web3 object to function
   }
 };
 

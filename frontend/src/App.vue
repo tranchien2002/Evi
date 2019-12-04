@@ -7,8 +7,6 @@
 
 <script>
 /* eslint-disable no-console */
-// import getWeb3 from './utils/getWeb3';
-// import Factory from "./contracts/Factory.json";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "app",
