@@ -300,10 +300,10 @@ body #page-container .et_pb_section .et_pb_pricing .et_pb_pricing_table_1 .et_pb
 }
 .et_pb_row_1.et_pb_row {
   padding-top: 40px !important;
-  padding-bottom: 40px !important;
+  /* padding-bottom: 40px !important; */
   margin-top: 60px !important;
   padding-top: 40px;
-  padding-bottom: 40px;
+  /* padding-bottom: 40px; */
 }
 body #page-container .et_pb_section .et_pb_pricing .et_pb_pricing_table_1 .et_pb_button:before,
 body #page-container .et_pb_section .et_pb_pricing .et_pb_pricing_table_1 .et_pb_button:after {
