@@ -13,10 +13,11 @@ export default {
   components: {},
   computed: { ...mapState("contract", ["web3"]) },
   methods: {
-    ...mapActions("contract", ["setWeb3"])
+    ...mapActions("contract", ["setWeb3", "initContarct"])
   },
-  created() {
-    this.setWeb3();
+  async mounted() {
+    await this.setWeb3();
+    await this.initContarct();
   }
 };
 </script>
