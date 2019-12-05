@@ -7,18 +7,17 @@
 
 <script>
 /* eslint-disable no-console */
-// import getWeb3 from './utils/getWeb3';
-// import Factory from "./contracts/Factory.json";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "app",
   components: {},
   computed: { ...mapState("contract", ["web3"]) },
   methods: {
-    ...mapActions("contract", ["setWeb3"])
+    ...mapActions("contract", ["setWeb3", "initContarct"])
   },
-  created() {
-    this.setWeb3();
+  async mounted() {
+    await this.setWeb3();
+    await this.initContarct();
   }
 };
 </script>
