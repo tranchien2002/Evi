@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import CommonLayout from '@/Layouts/CommonLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 
 Vue.use(Router);
 
@@ -22,6 +23,18 @@ export const router = new Router({
           path: '/create',
           name: 'create-insurance',
           component: () => import('./views/CreateInsurance.vue')
+        }
+      ]
+    },
+    {
+      path: '/',
+      name: 'admin-common',
+      component: AdminLayout,
+      children: [
+        {
+          path: '/admin',
+          name: 'admin-insurance',
+          component: () => import('./views/AdminInsurance.vue')
         }
       ]
     }

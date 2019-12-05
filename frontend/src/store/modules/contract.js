@@ -96,7 +96,7 @@ const actions = {
         console.log('create success');
       })
       .catch((e) => {
-        console.log('Create evi error', e);
+        throw e;
       });
   },
 

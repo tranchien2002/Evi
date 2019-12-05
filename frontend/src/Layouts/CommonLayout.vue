@@ -17,6 +17,6 @@ export default {
 @import '../assets/css/et-core-unified-15749750804049.min.css';
 @import '../assets/fontawesome-free-5.11.2-web/css/all.min.css';
 body {
-  font-family: 'Segoe UI' !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 </style>

@@ -9,7 +9,7 @@
         sizes="(max-width: 64px) 100vw, 64px"
         class="et-waypoint et_pb_animation_off"
         :src="linkLogo"
-      >
+      />
     </span>
     <div class="et_pb_pricing_content_top">
       <span class="et_pb_et_price">
@@ -50,17 +50,28 @@ export default {
   },
   methods: {
     choosePackge() {
-      var contractInsurance = JSON.stringify({
-        address: null,
-        date: null,
-        timeStart: null,
-        timeEnd: null,
-        price: this.price,
-        type: this.type,
-        compensation: this.compensation,
-        descDetail: this.descDetail
-      });
-      localStorage.setItem("contractInsurance", contractInsurance);
+      let contractInsurance = null;
+      if (JSON.parse(localStorage.getItem("contractInsurance"))) {
+        contractInsurance = JSON.parse(
+          localStorage.getItem("contractInsurance")
+        );
+        contractInsurance.price = this.price;
+        contractInsurance.compensation = this.compensation;
+      } else {
+        contractInsurance = {
+          address: null,
+          date: null,
+          timeStart: null,
+          timeEnd: null,
+          type: this.type,
+          price: this.price,
+          compensation: this.compensation
+        };
+      }
+      localStorage.setItem(
+        "contractInsurance",
+        JSON.stringify(contractInsurance)
+      );
       this.$router.push("/create");
     }
   },

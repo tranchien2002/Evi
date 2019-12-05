@@ -149,7 +149,7 @@ div.et_pb_section.et_pb_section_0 {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 .et_pb_section_0.et_pb_section {
-  padding-top: 100px;
+  padding-top: 50px;
   padding-right: 0px;
   padding-bottom: 100px;
   padding-left: 0px;
@@ -299,11 +299,10 @@ body #page-container .et_pb_section .et_pb_pricing .et_pb_pricing_table_1 .et_pb
   color: #ffffff !important;
 }
 .et_pb_row_1.et_pb_row {
-  padding-top: 40px !important;
+  padding-top: 30px !important;
   /* padding-bottom: 40px !important; */
   margin-top: 60px !important;
-  padding-top: 40px;
-  /* padding-bottom: 40px; */
+  padding-bottom: 25px;
 }
 body #page-container .et_pb_section .et_pb_pricing .et_pb_pricing_table_1 .et_pb_button:before,
 body #page-container .et_pb_section .et_pb_pricing .et_pb_pricing_table_1 .et_pb_button:after {

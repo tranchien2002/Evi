@@ -1,11 +1,27 @@
 <template>
   <div id="page-container">
+    <div :class="preloadPage ? 'preloader' : ''">
+      <svg class="circular" viewBox="25 25 50 50">
+        <circle
+          class="path"
+          cx="50"
+          cy="50"
+          r="20"
+          fill="none"
+          stroke-width="2"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
     <div id="et-main-area">
       <div id="main-content">
         <article id="post-210302" class="post-210302 page type-page status-publish hentry">
           <div class="entry-content">
             <div id="et-boc" class="et-boc">
               <div class="et_builder_inner_content et_pb_gutters3">
+                <router-link to="/admin" class="btn-admin" v-b-tooltip.hover title="Page Admin">
+                  <i class="fas fa-user-shield"></i>
+                </router-link>
                 <div class="et_pb_section et_pb_section_0 et_section_regular">
                   <div class="et_pb_row et_pb_row_0" id="introduction">
                     <div
@@ -16,9 +32,12 @@
                       >
                         <div class="et_pb_text_inner">
                           <h1>
-                            <img src="@/assets/images/logo.png" alt="logo" title="logo" width="10%">
+                            <img src="@/assets/images/logo.png" alt="logo" title="logo" />
                           </h1>
-                          <p>Let choose a suitable insurance package and fill out the information, leaving the rest to us!</p>
+                          <p>
+                            Let choose a suitable insurance package and fill out the information,
+                            leaving the rest to us!
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -58,7 +77,7 @@
                       srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                       sizes="(max-width: 3000px) 100vw, 3000px"
                       src="@/assets/images/divider2.jpg"
-                    >
+                    />
                   </div>
                 </div>
                 <div class="et_pb_section et_pb_section_4 et_pb_with_background et_section_regular">
@@ -91,13 +110,13 @@
       <div class="cntr">
         <div class="radio-box">
           <label for="opt1" class="radio">
-            <input type="radio" name="rdo" id="opt1" class="hidden">
+            <input type="radio" name="rdo" id="opt1" class="hidden" />
             <span class="label" @click="scrollTo('#introduction')"></span>
           </label>
         </div>
         <div class="radio-box">
           <label for="opt2" class="radio">
-            <input type="radio" name="rdo" id="opt2" class="hidden">
+            <input type="radio" name="rdo" id="opt2" class="hidden" />
             <span class="label" @click="scrollTo('#signed')"></span>
           </label>
         </div>
@@ -145,7 +164,7 @@ import VueScrollTo from "vue-scrollto";
 import InsurancePack from "@/components/InsurancePack";
 import PackList from "@/constants/InsurancePacks";
 import MyEvi from "@/components/MyEvi";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "HomePage",
   components: {
@@ -154,11 +173,14 @@ export default {
   },
   data() {
     return {
+      preloadPage: true,
       show: false,
       packList: PackList
     };
   },
+  computed: { ...mapState("contract", ["evies"]) },
   methods: {
+    ...mapActions("contract", ["setWeb3", "initContarct", "getAllEvi"]),
     scrollTo(index) {
       return VueScrollTo.scrollTo(index, 500);
     },
@@ -169,7 +191,11 @@ export default {
       this.$modal.hide("detail-insurance");
     }
   },
+
   async created() {
+    setTimeout(() => {
+      this.preloadPage = false;
+    }, 500);
     setTimeout(() => {
       this.show = true;
       console.log(this.evies);
@@ -180,11 +206,24 @@ export default {
         this.scrollTo("#signed");
       }, 200);
     }
-  },
-  computed: { ...mapState("contract", ["evies"]) }
+    await this.setWeb3();
+    await this.initContarct();
+    await this.getAllEvi();
+  }
 };
 </script>
 <style lang="scss" scope>
+.btn-admin {
+  position: fixed;
+  color: #eee;
+  top: 45vh;
+  right: 0.5rem;
+  font-size: 1.6rem;
+  z-index: 1000;
+}
+.btn-admin:hover {
+  color: #12b5ca;
+}
 .my-insurance {
   margin-top: 2rem;
 }
@@ -243,7 +282,7 @@ body {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 10px;
+  width: 14px;
   height: 10px;
   border-radius: 100%;
   background: #225cff;
@@ -358,5 +397,25 @@ $facebook_color: #3880ff;
 .pop-out-leave-active {
   opacity: 0;
   transform: translateY(24px);
+}
+
+.et_pb_text_inner > h1 > img {
+  width: 4rem;
+}
+
+.et_pb_button_wrapper {
+  margin-top: 3rem;
+}
+.et_pb_pricing_heading {
+  margin-bottom: 1.5rem;
+}
+.et_pb_pricing_content_top {
+  margin-top: 2rem;
+}
+
+.et_pb_row_1.et_pb_row {
+  padding-top: 30px !important;
+  margin-top: 60px !important;
+  padding-bottom: 25px;
 }
 </style>
