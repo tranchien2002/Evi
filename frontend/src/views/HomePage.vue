@@ -16,12 +16,7 @@
                       >
                         <div class="et_pb_text_inner">
                           <h1>
-                            <img
-                              src="@/assets/images/logo.png"
-                              alt="logo"
-                              title="logo"
-                              width="10%"
-                            />
+                            <img src="@/assets/images/logo.png" alt="logo" title="logo" width="10%">
                           </h1>
                           <p>
                             Lorem ipsum dolor sit amet, consectetur adipiscingelit. Integer et
@@ -41,126 +36,15 @@
                           class="et_pb_with_border et_pb_module et_pb_pricing_tables_0 et_pb_pricing clearfix et_pb_pricing_3 et_pb_no_featured_in_first_row et_pb_pricing_no_bullet"
                         >
                           <div class="et_pb_pricing_table_wrap">
-                            <div class="et_pb_pricing_table et_pb_pricing_table_0 col-4">
-                              <div class="et_pb_pricing_heading">
-                                <h2 class="et_pb_pricing_title">Basic</h2>
-                              </div>
-                              <span class="et_pb_image_wrap">
-                                <img
-                                  data-cfsrc="@/assets/images/finiance-icon-03.png"
-                                  sizes="(max-width: 64px) 100vw, 64px"
-                                  class="et-waypoint et_pb_animation_off"
-                                  src="@/assets/images/finiance-icon-03.png"
-                                />
-                              </span>
-                              <div class="et_pb_pricing_content_top">
-                                <span class="et_pb_et_price">
-                                  <span class="et_pb_dollar_sign">$</span>
-                                  <span class="et_pb_sum">1000</span>
-                                  <span class="et_pb_frequency"></span>
-                                </span>
-                              </div>
-                              <div class="et_pb_pricing_content">
-                                <ul class="et_pb_pricing">
-                                  <li>
-                                    <span>Initial Consultation</span>
-                                  </li>
-                                  <li>
-                                    <span>No credit card required</span>
-                                  </li>
-                                  <li>
-                                    <span>Upgrade anytime</span>
-                                  </li>
-                                </ul>
-                              </div>
-                              <div class="et_pb_button_wrapper">
-                                <a
-                                  class="et_pb_button et_pb_pricing_table_button"
-                                  href="javascript:void(0)"
-                                  >Choose Plan</a
-                                >
-                              </div>
-                            </div>
-                            <div class="et_pb_pricing_table et_pb_pricing_table_1">
-                              <div class="et_pb_pricing_heading">
-                                <h2 class="et_pb_pricing_title">Medium</h2>
-                              </div>
-                              <span class="et_pb_image_wrap">
-                                <img
-                                  data-cfsrc="@/assets/images/finiance-icon-02.png"
-                                  sizes="(max-width: 64px) 100vw, 64px"
-                                  class="et-waypoint et_pb_animation_off"
-                                  src="@/assets/images/finiance-icon-02.png"
-                                />
-                              </span>
-                              <div class="et_pb_pricing_content_top">
-                                <span class="et_pb_et_price">
-                                  <span class="et_pb_dollar_sign">$</span>
-                                  <span class="et_pb_sum">5000</span>
-                                  <span class="et_pb_frequency"></span>
-                                </span>
-                              </div>
-                              <div class="et_pb_pricing_content">
-                                <ul class="et_pb_pricing">
-                                  <li>
-                                    <span>Initial Consultation</span>
-                                  </li>
-                                  <li>
-                                    <span>No credit card required</span>
-                                  </li>
-                                  <li>
-                                    <span>Upgrade anytime</span>
-                                  </li>
-                                </ul>
-                              </div>
-                              <div class="et_pb_button_wrapper">
-                                <a
-                                  class="et_pb_button et_pb_pricing_table_button"
-                                  href="javascript:void(0)"
-                                  >Choose Plan</a
-                                >
-                              </div>
-                            </div>
-                            <div class="et_pb_pricing_table et_pb_pricing_table_2">
-                              <div class="et_pb_pricing_heading">
-                                <h2 class="et_pb_pricing_title">Big</h2>
-                              </div>
-                              <span class="et_pb_image_wrap">
-                                <img
-                                  data-cfsrc="@/assets/images/finiance-icon-01.png"
-                                  sizes="(max-width: 64px) 100vw, 64px"
-                                  class="et-waypoint et_pb_animation_off"
-                                  src="@/assets/images/finiance-icon-01.png"
-                                />
-                              </span>
-                              <div class="et_pb_pricing_content_top">
-                                <span class="et_pb_et_price">
-                                  <span class="et_pb_dollar_sign">$</span>
-                                  <span class="et_pb_sum">10000</span>
-                                  <span class="et_pb_frequency"></span>
-                                </span>
-                              </div>
-                              <div class="et_pb_pricing_content">
-                                <ul class="et_pb_pricing">
-                                  <li>
-                                    <span>Initial Consultation</span>
-                                  </li>
-                                  <li>
-                                    <span>No credit card required</span>
-                                  </li>
-                                  <li>
-                                    <span>Upgrade anytime</span>
-                                  </li>
-                                </ul>
-                              </div>
-                              <div class="et_pb_button_wrapper">
-                                <a
-                                  class="et_pb_button et_pb_pricing_table_button"
-                                  href="javascript:void(0)"
-                                  >Choose Plan</a
-                                >
-                              </div>
-                            </div>
+                            <InsurancePack
+                              v-for="(pack, index) in packList"
+                              :key="index"
+                              :price="pack.price"
+                              :description="pack.description"
+                              :type="pack.type"
+                              :index="index"
+                              :logo="pack.logo"
+                            ></InsurancePack>
                           </div>
                         </div>
                       </div>
@@ -173,15 +57,10 @@
                   <div class="et_pb_module et_pb_fullwidth_image et_pb_fullwidth_image_0">
                     <img
                       data-cfsrc="@/assets/images/divider2.jpg"
-                      srcset="
-                        @/assets/images/divider2.jpg         3000w,
-                        @/assets/images/divider2-254x15.jpg   254w,
-                        @/assets/images/divider2-533x31.jpg   533w,
-                        @/assets/images/divider2-1080x62.jpg 1080w
-                      "
+                      srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                       sizes="(max-width: 3000px) 100vw, 3000px"
                       src="@/assets/images/divider2.jpg"
-                    />
+                    >
                   </div>
                 </div>
                 <div class="et_pb_section et_pb_section_4 et_pb_with_background et_section_regular">
@@ -193,108 +72,9 @@
                         class="et_pb_with_border et_pb_module et_pb_pricing_tables_0 et_pb_pricing clearfix et_pb_pricing_3 et_pb_no_featured_in_first_row et_pb_pricing_no_bullet"
                       >
                         <div class="et_pb_pricing_table_wrap" ref="signed" id="signed">
-                          <div class="et_pb_pricing_table et_pb_pricing_table_0 insurance-package">
-                            <div class="et_pb_pricing_heading">
-                              <h2 class="et_pb_pricing_title">Signed</h2>
-                            </div>
-                            <span class="et_pb_image_wrap">
-                              <img
-                                data-cfsrc="@/assets/images/cheque.png"
-                                sizes="(max-width: 64px) 100vw, 64px"
-                                class="et-waypoint et_pb_animation_off"
-                                src="@/assets/images/cheque.png"
-                              />
-                            </span>
-                            <div class="et_pb_pricing_content">
-                              <ul class="et_pb_pricing">
-                                <li>
-                                  <span>Nguyen Van A</span>
-                                </li>
-                                <li>
-                                  <span>01/01/2019 - 01/10/2020</span>
-                                </li>
-                                <li>
-                                  <span>Basic</span>
-                                </li>
-                              </ul>
-                            </div>
-                            <div class="et_pb_button_wrapper">
-                              <a
-                                class="et_pb_button et_pb_pricing_table_button"
-                                href="javascript:void(0)"
-                                @click="showModalDetail"
-                                >Detail</a
-                              >
-                            </div>
-                          </div>
-                          <div class="et_pb_pricing_table et_pb_pricing_table_1 insurance-package">
-                            <div class="et_pb_pricing_heading">
-                              <h2 class="et_pb_pricing_title">Signed</h2>
-                            </div>
-                            <span class="et_pb_image_wrap">
-                              <img
-                                data-cfsrc="@/assets/images/cheque.png"
-                                sizes="(max-width: 64px) 100vw, 64px"
-                                class="et-waypoint et_pb_animation_off"
-                                src="@/assets/images/cheque.png"
-                              />
-                            </span>
-                            <div class="et_pb_pricing_content">
-                              <ul class="et_pb_pricing">
-                                <li>
-                                  <span>Nguyen Van A</span>
-                                </li>
-                                <li>
-                                  <span>01/01/2019 - 01/10/2020</span>
-                                </li>
-                                <li>
-                                  <span>Big</span>
-                                </li>
-                              </ul>
-                            </div>
-                            <div class="et_pb_button_wrapper">
-                              <a
-                                class="et_pb_button et_pb_pricing_table_button"
-                                href="javascript:void(0)"
-                                @click="showModalDetail"
-                                >Detail</a
-                              >
-                            </div>
-                          </div>
-                          <div class="et_pb_pricing_table et_pb_pricing_table_2 insurance-package">
-                            <div class="et_pb_pricing_heading">
-                              <h2 class="et_pb_pricing_title">Signed</h2>
-                            </div>
-                            <span class="et_pb_image_wrap">
-                              <img
-                                data-cfsrc="@/assets/images/cheque.png"
-                                sizes="(max-width: 64px) 100vw, 64px"
-                                class="et-waypoint et_pb_animation_off"
-                                src="@/assets/images/cheque.png"
-                              />
-                            </span>
-                            <div class="et_pb_pricing_content">
-                              <ul class="et_pb_pricing">
-                                <li>
-                                  <span>Nguyen Van A</span>
-                                </li>
-                                <li>
-                                  <span>01/01/2019 - 01/10/2020</span>
-                                </li>
-                                <li>
-                                  <span>Basic</span>
-                                </li>
-                              </ul>
-                            </div>
-                            <div class="et_pb_button_wrapper">
-                              <a
-                                class="et_pb_button et_pb_pricing_table_button"
-                                href="javascript:void(0)"
-                                @click="showModalDetail"
-                                >Detail</a
-                              >
-                            </div>
-                          </div>
+                          <MyEvi :index="0" :onClick="showModalDetail"/>
+                          <MyEvi :index="1" :onClick="showModalDetail"/>
+                          <MyEvi :index="2" :onClick="showModalDetail"/>
                         </div>
                       </div>
                     </div>
@@ -310,13 +90,13 @@
       <div class="cntr">
         <div class="radio-box">
           <label for="opt1" class="radio">
-            <input type="radio" name="rdo" id="opt1" class="hidden" />
+            <input type="radio" name="rdo" id="opt1" class="hidden">
             <span class="label" @click="scrollTo('#introduction')"></span>
           </label>
         </div>
         <div class="radio-box">
           <label for="opt2" class="radio">
-            <input type="radio" name="rdo" id="opt2" class="hidden" />
+            <input type="radio" name="rdo" id="opt2" class="hidden">
             <span class="label" @click="scrollTo('#signed')"></span>
           </label>
         </div>
@@ -331,15 +111,21 @@
               <form>
                 <div>
                   <label>Họ và Tên :</label>
-                  <p><b>Nguyen Van A</b></p>
+                  <p>
+                    <b>Nguyen Van A</b>
+                  </p>
                 </div>
                 <div>
                   <label>Ngày Mua Bảo Hiểm:</label>
-                  <p><b>01/01/2019 - 01/10/2020</b></p>
+                  <p>
+                    <b>01/01/2019 - 01/10/2020</b>
+                  </p>
                 </div>
                 <div>
                   <label>Gói bảo hiểm:</label>
-                  <p><b>Basic</b></p>
+                  <p>
+                    <b>Basic</b>
+                  </p>
                 </div>
               </form>
 
@@ -354,12 +140,20 @@
 
 <script>
 /* eslint-disable no-console */
-import VueScrollTo from 'vue-scrollto';
+import VueScrollTo from "vue-scrollto";
+import InsurancePack from "@/components/InsurancePack";
+import PackList from "@/constants/InsurancePacks";
+import MyEvi from "@/components/MyEvi";
 export default {
-  name: 'HomePage',
+  name: "HomePage",
+  components: {
+    InsurancePack,
+    MyEvi
+  },
   data() {
     return {
-      show: false
+      show: false,
+      packList: PackList
     };
   },
   methods: {
@@ -367,10 +161,10 @@ export default {
       return VueScrollTo.scrollTo(index, 500);
     },
     showModalDetail() {
-      this.$modal.show('detail-insurance');
+      this.$modal.show("detail-insurance");
     },
     hideModalDetail() {
-      this.$modal.hide('detail-insurance');
+      this.$modal.hide("detail-insurance");
     }
   },
   async created() {
@@ -378,17 +172,17 @@ export default {
       this.show = true;
     }, 100);
 
-    if (this.$route.hash === '#signed') {
+    if (this.$route.hash === "#signed") {
       setTimeout(() => {
-        this.scrollTo('#signed');
+        this.scrollTo("#signed");
       }, 200);
     }
   }
 };
 </script>
 <style lang="scss" scope>
-@import '../assets/css/style.css';
-@import '../assets/css/et-core-unified-15749750804049.min.css';
+@import "../assets/css/style.css";
+@import "../assets/css/et-core-unified-15749750804049.min.css";
 
 .list-item {
   display: inline-block;
@@ -416,7 +210,7 @@ export default {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 .radio {
   position: relative;
@@ -436,7 +230,7 @@ body {
   margin-top: 2rem;
 }
 .radio .label:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 3px;
   left: 3px;
@@ -452,10 +246,10 @@ body {
 .radio:hover .label:after {
   transform: scale(3.6);
 }
-input[type='radio']:checked + .label {
+input[type="radio"]:checked + .label {
   border-color: #225cff;
 }
-input[type='radio']:checked + .label:after {
+input[type="radio"]:checked + .label:after {
   transform: scale(1);
   transition: all 0.2s cubic-bezier(0.35, 0.9, 0.4, 0.9);
   opacity: 1;
