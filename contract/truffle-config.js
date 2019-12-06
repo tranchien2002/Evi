@@ -3,6 +3,7 @@ const HDWalletProvider = require('truffle-hdwallet-provider')
 require('dotenv').config()
 
 module.exports = {
+  contracts_directory: '../frontend/src/contracts',
   networks: {
     cldev: {
       host: '127.0.0.1',
@@ -21,7 +22,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: '0.5.0',
+      version: '0.5.11',
     },
   },
 }
