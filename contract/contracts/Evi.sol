@@ -1,65 +1,133 @@
 pragma solidity >=0.5.0 <0.6.0;
+pragma experimental ABIEncoderV2;
 
-import "chainlink/v0.5/contracts/ChainlinkClient.sol";
-import "chainlink/v0.5/contracts/vendor/Ownable.sol";
-import {
-    SafeMath as SafeMath_Chainlink
-} from "chainlink/v0.5/contracts/vendor/SafeMath.sol";
+import "https://github.com/tantv-918/Evi/blob/completeContract/contract/contracts/Evi.sol";
+import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/ChainlinkClient.sol";
+import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/vendor/Ownable.sol";
 
-contract Evi is ChainlinkClient, Ownable {
-    using SafeMath_Chainlink for uint256;
-    uint256 constant private ORACLE_PAYMENT = 1 * LINK;
-    bool public expired = false;
-    bool public paid = false;
+contract EviFactory is ChainlinkClient{
+  struct AllInsuranceOfBuyer{
+    address[] allInsurance;
+    uint8  exist;
+  }
 
-    address public buyer;
-    string  public insuranceId;
-    uint256 public price;
-    uint256 public insuranceType;
-    uint256 public startingTime;
-    uint256 public endingTime;
-    uint256 public deploymentTime;
+  struct InsurancePackage{
+    string name;
+    uint256 priceUSD;
+    uint256 rate;
+  }
 
+  address payable manager = 0x8f287eA4DAD62A3A626942d149509D6457c2516C;
 
-    event successNodeResponse(
-      bool success
-    );
+  mapping (address => AllInsuranceOfBuyer) public contractsOfBuyer;
+  mapping (string => InsurancePackage) public insurancePackage;
 
-    constructor(
-      address _buyer,
-      string memory _insuranceId,
-      uint256 _price,
-      uint256 _insuranceType,
-      uint256 _startingTime,
-      uint256 _endingTime,
-      string memory _jobId,
-      address _oracle,
-      address _link ) public payable {
+  address[] public allCustomers;
+  InsurancePackage[] allPackage;
+  address public owner;
+  uint256 public linkAmount = 30;
 
-      buyer = _buyer;
-      insuranceId = _insuranceId;
-      price = _price;
-      insuranceType = _insuranceType;
-      startingTime = _startingTime;
-      endingTime = _endingTime;
-      deploymentTime = block.timestamp;
+  constructor() public {
+    owner = msg.sender;
 
-      if (_link == address(0)) {
-        setPublicChainlinkToken();
-        setChainlinkOracle(_oracle);
-      } else {
-        setChainlinkToken(_link);
-        setChainlinkOracle(_oracle);
-      }
+    InsurancePackage memory pack1;
+    pack1.name = "Silver";
+    pack1.priceUSD = 1000;
+    pack1.rate = 25;
+    insurancePackage["Silver"] = pack1;
+    allPackage.push(pack1);
+
+    InsurancePackage memory pack2;
+    pack1.name = "Gold";
+    pack1.priceUSD = 5000;
+    pack1.rate = 60;
+    insurancePackage["Gold"] = pack2;
+    allPackage.push(pack2);
+
+    InsurancePackage memory pack3;
+    pack1.name = "Platinum";
+    pack1.priceUSD = 10000;
+    pack1.rate = 100;
+    insurancePackage["Platinum"] = pack3;
+    allPackage.push(pack3);
+  }
+
+  event contractDeployed(
+    address Evi
+  );
+
+  event AddPackage(
+    bool success
+  );
+
+  modifier onlyManager(){
+		require(msg.sender == manager, "Unauthorised , must be manager");
+		_;
+	}
+
+  function createEvi(
+    string memory _location,
+    string memory _date,
+    string memory _times,
+    uint256 _priceWei,
+    string memory _packageName,
+    address _link
+  ) public payable {
+    require(msg.value >= _priceWei, "Not Enough Money");
+
+    uint256 rate = insurancePackage[_packageName].rate;
+
+    address payable packageInsurance = address(new Evi(msg.sender, _location, _date, _times, _priceWei, rate, linkAmount ,_link));
+
+    packageInsurance.transfer(msg.value);
+
+    LinkTokenInterface link = LinkTokenInterface(0x20fE562d797A42Dcb3399062AE9546cd06f63280);
+    link.transfer(packageInsurance, linkAmount * LINK);
+
+    if(contractsOfBuyer[msg.sender].exist != 1){
+      contractsOfBuyer[msg.sender].allInsurance.push(packageInsurance);
+      contractsOfBuyer[msg.sender].exist = 1;
+      allCustomers.push(msg.sender);
+
+    } else {
+      contractsOfBuyer[msg.sender].allInsurance.push(packageInsurance);
     }
 
-    modifier buyerContract(){
-        require(address(this) == msg.sender || buyer == msg.sender,"Unauthorised , must be buyer");
-        _;
-    }
+    emit contractDeployed(packageInsurance);
+  }
 
-    function fulfillNodeRequest(bytes32 _requestId, bool paid) public recordChainlinkFulfillment(_requestId) {
-        emit successNodeResponse(true);
-    }
+  function getAllContract(address _buyer) public view returns(address[] memory) {
+    //require(msg.sender == _buyer || msg.sender == manager, "Permission Denided !");
+    return contractsOfBuyer[_buyer].allInsurance;
+  }
 
+  function getAllCustomer() public view onlyManager returns(address[] memory) {
+    return allCustomers;
+  }
+
+  function getInsurancePackage(string memory _name) public view onlyManager returns(InsurancePackage memory) {
+    return (insurancePackage[_name]);
+  }
+
+  function addInsurancePackage(string memory _name, uint256 _priceUSD, uint256 rate) public onlyManager {
+    InsurancePackage memory package;
+
+    package.name = _name;
+    package.priceUSD = _priceUSD;
+    package.rate = rate;
+
+    insurancePackage[_name] = package;
+    allPackage.push(package);
+
+    emit AddPackage(true);
+  }
+
+  function setLINKAmount(uint256 _linkAmount) public onlyManager {
+    linkAmount = _linkAmount;
+  }
+
+   function getAllInsurancePackage() public view returns(InsurancePackage[] memory){
+     return allPackage;
+   }
+  function() external payable {}
 }
