@@ -1,11 +1,12 @@
 pragma solidity >=0.5.0 <0.6.0;
+pragma experimental ABIEncoderV2;
 import "./Evi.sol";
 import "chainlink/v0.5/contracts/ChainlinkClient.sol";
 import "chainlink/v0.5/contracts/vendor/Ownable.sol";
 
 contract EviFactory is ChainlinkClient{
   struct AllInsuranceOfBuyer{
-    address[] allInsurance;
+    string[] allInsuranceId;
     uint8  exist;
   }
 
@@ -18,6 +19,7 @@ contract EviFactory is ChainlinkClient{
   address payable manager = 0x8f287eA4DAD62A3A626942d149509D6457c2516C;
 
   mapping (address => AllInsuranceOfBuyer) public contractsOfBuyer;
+  mapping (string => address) public idToContract;
   mapping (string => InsurancePackage) public insurancePackage;
 
   address[] public allCustomers;
@@ -64,6 +66,7 @@ contract EviFactory is ChainlinkClient{
 	}
 
   function createEvi(
+    string memory _insuranceId,
     string memory _location,
     string memory _date,
     string memory _times,
@@ -77,26 +80,32 @@ contract EviFactory is ChainlinkClient{
 
     address payable packageInsurance = address(new Evi(msg.sender, _location, _date, _times, _priceWei, rate, linkAmount ,_link));
 
+    idToContract[_insuranceId] = packageInsurance;
+
     packageInsurance.transfer(msg.value);
 
     LinkTokenInterface link = LinkTokenInterface(0x20fE562d797A42Dcb3399062AE9546cd06f63280);
     link.transfer(packageInsurance, linkAmount * LINK);
 
     if(contractsOfBuyer[msg.sender].exist != 1){
-      contractsOfBuyer[msg.sender].allInsurance.push(packageInsurance);
+      contractsOfBuyer[msg.sender].allInsuranceId.push(_insuranceId);
       contractsOfBuyer[msg.sender].exist = 1;
       allCustomers.push(msg.sender);
 
     } else {
-      contractsOfBuyer[msg.sender].allInsurance.push(packageInsurance);
+      contractsOfBuyer[msg.sender].allInsuranceId.push(_insuranceId);
     }
 
     emit contractDeployed(packageInsurance);
   }
 
-  function getAllContract(address _buyer) public view returns(address[] memory) {
+  function getAllContract(address _buyer) public view returns(string[] memory) {
     require(msg.sender == _buyer || msg.sender == manager, "Permission Denided !");
-    return contractsOfBuyer[_buyer].allInsurance;
+    return contractsOfBuyer[_buyer].allInsuranceId;
+  }
+
+  function getContractAddress(string memory _insuranceId) public view returns(address){
+    return idToContract[_insuranceId];
   }
 
   function getAllCustomer() public view onlyManager returns(address[] memory) {

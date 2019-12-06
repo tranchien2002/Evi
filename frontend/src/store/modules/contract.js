@@ -49,7 +49,7 @@ const actions = {
     const account = await state.account;
     // let test = '0x8f287eA4DAD62A3A626942d149509D6457c2516C';
     console.log('account--', account);
-    let evies = await factory.methods.getInsurancePackage('Gold').call({ from: account });
+    let evies = await factory.methods.getAllCustomer().call({ from: account });
     console.log('evies', evies);
   }
 };
