@@ -105,8 +105,7 @@ contract EviFactory is ChainlinkClient{
     return allCustomers;
   }
 
-  function getInsurancePackage(string memory _name) public view onlyManager returns(InsurancePackage) {
-    //return (insurancePackage[_name].name, insurancePackage[_name].priceUSD, insurancePackage[_name].rate);
+  function getInsurancePackage(string memory _name) public view onlyManager returns(InsurancePackage memory) {
     return (insurancePackage[_name]);
   }
 
@@ -127,8 +126,8 @@ contract EviFactory is ChainlinkClient{
     linkAmount = _linkAmount;
   }
 
-  // function getAllInsurancePackage() public view onlyManager returns(string[] memory, uint256[], uint256[]){
-  //   //return allPackage;
-  // }
+   function getAllInsurancePackage() public view returns(InsurancePackage[] memory){
+     return allPackage;
+   }
   function() external payable {}
 }
