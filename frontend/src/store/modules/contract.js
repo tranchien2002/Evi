@@ -7,7 +7,10 @@ const state = {
   account: null,
   balance: 0,
   factory: null,
-  evies: []
+  evies: [],
+  contracts: [],
+  insurances: [],
+  customers: []
 };
 
 const mutations = {
@@ -21,6 +24,15 @@ const mutations = {
   },
   setMyEvies(state, payload) {
     state.evies = payload.evies;
+  },
+  setContracts(state, payload) {
+    state.contracts = payload.contracts;
+  },
+  setInsurances(state, payload) {
+    state.insurances = payload.insurances;
+  },
+  setCustomers(state, payload) {
+    state.customers = payload.customers;
   }
 };
 
@@ -52,7 +64,7 @@ const actions = {
     const factory = await state.factory();
     const account = await state.account;
     const web3 = await state.web3();
-    let eviAddresses = await factory.methods.getAllCustomer().call({ from: account });
+    let eviAddresses = await factory.methods.getAllContract(account).call({ from: account });
     let evies = [];
     for (let i = 0; i < eviAddresses.length; i++) {
       let evi = {
@@ -68,6 +80,57 @@ const actions = {
       evies.push(evi);
     }
     commit('setMyEvies', { evies });
+  },
+
+  async createEvi({ state }, param) {
+    const factory = await state.factory();
+    const account = await state.account;
+
+    await factory.methods
+      .createEvi(
+        param.location,
+        param.date,
+        param.times,
+        param.priceWei,
+        param.packageName,
+        param.link
+      )
+      .send({ from: account, value: param.priceWei })
+      .then(() => {
+        console.log('create success');
+      })
+      .catch((e) => {
+        console.log('Create evi error', e);
+      });
+  },
+
+  async getAllInsurancePackage({ commit, state }) {
+    const factory = await state.factory();
+    const account = await state.account;
+    let insurances = await factory.methods.getAllInsurancePackage().call({ from: account });
+    commit('setInsurances', { insurances });
+    console.log(insurances);
+  },
+  async getAllCustomers({ commit, state }) {
+    const factory = await state.factory();
+    const account = await state.account;
+    let customers = await factory.methods.getAllCustomer().call({ from: account });
+    commit('setCustomers', { customers });
+    console.log(customers);
+  },
+  async addInsurancePackage({ state }, param) {
+    const factory = await state.factory();
+    const account = await state.account;
+
+    await factory.methods
+      .addInsurancePackage(param.name, param.priceUSD, param.rate)
+      .send({ from: account })
+      .then(() => {
+        console.log('create insurance package success');
+      })
+      .catch((e) => {
+        console.log('Create insurance package error', e);
+      });
   }
 };
 
