@@ -16,7 +16,7 @@ contract Evi is ChainlinkClient {
 	string[] public tempTimes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
 
 
-  address payable manager = 0x8f287eA4DAD62A3A626942d149509D6457c2516C;
+  address payable manager;
 
   bool public paid = false;
 
@@ -58,7 +58,8 @@ contract Evi is ChainlinkClient {
     uint256  _price,
     uint256  _rate,
     uint256 _linkAmount,
-    address _link) public payable {
+    address _link,
+    address payable _manager) public payable {
 
     buyer = _buyer;
     location = _location;
@@ -66,6 +67,7 @@ contract Evi is ChainlinkClient {
     price = _price;
 		rate = _rate;
     linkAmount = _linkAmount;
+    manager = _manager;
 
     bytes memory timesbyte = bytes(_times);
     for(uint i; i<24; i++){
