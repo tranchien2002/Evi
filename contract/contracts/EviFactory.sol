@@ -1,8 +1,8 @@
 pragma solidity >=0.5.0 <0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "https://github.com/tantv-918/Evi/blob/fixContract/contract/contracts/Evi.sol";
-import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/ChainlinkClient.sol";
+import "./Evi.sol";
+import "chainlink/v0.5/contracts/ChainlinkClient.sol";
 
 contract EviFactory is ChainlinkClient{
   struct AllInsuranceOfBuyer{
@@ -36,16 +36,16 @@ contract EviFactory is ChainlinkClient{
     allPackage.push(pack1);
 
     InsurancePackage memory pack2;
-    pack1.name = "Gold";
-    pack1.priceUSD = 5000;
-    pack1.rate = 60;
+    pack2.name = "Gold";
+    pack2.priceUSD = 5000;
+    pack2.rate = 60;
     insurancePackage["Gold"] = pack2;
     allPackage.push(pack2);
 
     InsurancePackage memory pack3;
-    pack1.name = "Platinum";
-    pack1.priceUSD = 10000;
-    pack1.rate = 100;
+    pack3.name = "Platinum";
+    pack3.priceUSD = 10000;
+    pack3.rate = 100;
     insurancePackage["Platinum"] = pack3;
     allPackage.push(pack3);
   }
@@ -103,7 +103,7 @@ contract EviFactory is ChainlinkClient{
     return allCustomers;
   }
 
-  function getInsurancePackage(string memory _name) public view onlyManager returns(InsurancePackage memory) {
+  function getInsurancePackage(string memory _name) public view returns(InsurancePackage memory) {
     return (insurancePackage[_name]);
   }
 
