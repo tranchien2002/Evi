@@ -1,194 +1,133 @@
 pragma solidity >=0.5.0 <0.6.0;
+pragma experimental ABIEncoderV2;
 
+import "https://github.com/tantv-918/Evi/blob/completeContract/contract/contracts/Evi.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/ChainlinkClient.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/vendor/Ownable.sol";
-import {
-  SafeMath as SafeMath_Chainlink
-} from "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/vendor/SafeMath.sol";
 
-contract Evi is ChainlinkClient {
-  using SafeMath_Chainlink for uint256;
-  address private constant ORACLE_WEATHER = 0x4a3FBbB385b5eFEB4BC84a25AaADcD644Bd09721;
-  bytes32 private constant JOB_ID_WEATHER = "a37ee8100c4c4ab19e30ae8039289b67";
+contract EviFactory is ChainlinkClient{
+  struct AllInsuranceOfBuyer{
+    address[] allInsurance;
+    uint8  exist;
+  }
 
-  address private constant ORACLE_PRICE = 0xc99B3D447826532722E41bc36e644ba3479E4365;
-  bytes32 private constant JOB_ID_PRICE = "3cff0a3524694ff8834bda9cf9c779a1";
-	string[] public tempTimes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
-
+  struct InsurancePackage{
+    string name;
+    uint256 priceUSD;
+    uint256 rate;
+  }
 
   address payable manager = 0x8f287eA4DAD62A3A626942d149509D6457c2516C;
 
-  bool public paid = false;
+  mapping (address => AllInsuranceOfBuyer) public contractsOfBuyer;
+  mapping (string => InsurancePackage) public insurancePackage;
 
-  address payable buyer;
-  string public location;
-	string public date;
-	string[] public times;
-  string public timeString;
-  uint256 public price;
-	uint256 public rate;
-  uint256 public linkAmount;
+  address[] public allCustomers;
+  InsurancePackage[] allPackage;
+  address public owner;
+  uint256 public linkAmount = 30;
 
-  uint256 public totalRainyHours;
-  uint256 public deploymentTime;
-	uint256 public compensation;
+  constructor() public {
+    owner = msg.sender;
 
-  int256[] public hourlyState;
+    InsurancePackage memory pack1;
+    pack1.name = "Silver";
+    pack1.priceUSD = 1000;
+    pack1.rate = 25;
+    insurancePackage["Silver"] = pack1;
+    allPackage.push(pack1);
 
-  uint256 public etherPrice;
-  int256 public firstHours;
+    InsurancePackage memory pack2;
+    pack1.name = "Gold";
+    pack1.priceUSD = 5000;
+    pack1.rate = 60;
+    insurancePackage["Gold"] = pack2;
+    allPackage.push(pack2);
 
-  event successNodeResponse(
-    bool success,
-    int256 precipMM
-  );
-
-  event successPrice(
-    bool success,
-    uint256 price
-  );
-
-  uint256 public payment;
-
-  constructor(
-    address payable _buyer,
-    string memory _location,
-    string memory _date,
-		string memory _times,
-    uint256  _price,
-    uint256  _rate,
-    uint256 _linkAmount,
-    address _link) public payable {
-
-    buyer = _buyer;
-    location = _location;
-    date = _date;
-    price = _price;
-		rate = _rate;
-    linkAmount = _linkAmount;
-
-    bytes memory timesbyte = bytes(_times);
-    for(uint i; i<24; i++){
-      if(timesbyte[i] == "1") {
-        times.push(tempTimes[i]);
-      }
-    }
-
-    timeString = _times;
-
-    deploymentTime = block.timestamp;
-
-    if (_link == address(0)) {
-      setPublicChainlinkToken();
-      payment = 1 * LINK;
-    } else {
-      setChainlinkToken(_link);
-      payment = 1;
-    }
-
-    setChainlinkOracle(ORACLE_WEATHER);
+    InsurancePackage memory pack3;
+    pack1.name = "Platinum";
+    pack1.priceUSD = 10000;
+    pack1.rate = 100;
+    insurancePackage["Platinum"] = pack3;
+    allPackage.push(pack3);
   }
 
-  modifier buyerContract(){
-    require(address(this) == msg.sender || buyer == msg.sender,"Unauthorised , must be buyer");
-    _;
-  }
+  event contractDeployed(
+    address Evi
+  );
 
-	modifier onlyManager(){
+  event AddPackage(
+    bool success
+  );
+
+  modifier onlyManager(){
 		require(msg.sender == manager, "Unauthorised , must be manager");
 		_;
 	}
 
-  function queryPrice() public {
-    Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_PRICE, address(this), this.fulfillPrice.selector);
-    req.add("get", "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD");
-    req.add("path", "USD");
-  	req.addInt("times", 100);
-    sendChainlinkRequestTo(ORACLE_PRICE, req, payment);
-  }
+  function createEvi(
+    string memory _location,
+    string memory _date,
+    string memory _times,
+    uint256 _priceWei,
+    string memory _packageName,
+    address _link
+  ) public payable {
+    require(msg.value >= _priceWei, "Not Enough Money");
 
-  function fulfillPrice(bytes32 _requestId, uint256 _etherPrice) public recordChainlinkFulfillment(_requestId) {
-    linkAmount--;
-    emit successPrice(true, _etherPrice);
-    etherPrice = _etherPrice;
-  }
+    uint256 rate = insurancePackage[_packageName].rate;
 
-  function queryWeather() public {
-    require(paid == false);
-    uint arrayLength = times.length;
-    for (uint i=0; i<arrayLength; i++) {
-      Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillWeather.selector);
-      req.add("q", location);
-      req.add("date", date);
-      req.add("tp", "1");
-      bytes memory s;
-      s = abi.encodePacked("data.weather.0.hourly.");
-      s = abi.encodePacked(s, times[i]);
-      s = abi.encodePacked(s, ".precipMM");
-      string memory path = string(s);
-      req.add("copyPath", path);
-      req.addInt("times", 100);
-      sendChainlinkRequestTo(chainlinkOracleAddress(), req, payment);
-    }
-  }
+    address payable packageInsurance = address(new Evi(msg.sender, _location, _date, _times, _priceWei, rate, linkAmount ,_link));
 
-  function queryFirstHours() public {
-      Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillFirstWeather.selector);
-      req.add("q", location);
-      req.add("date", date);
-      req.add("tp", "1");
-      req.add("copyPath", "data.weather.0.hourly.0.precipMM");
-      req.addInt("times", 100);
-      sendChainlinkRequestTo(chainlinkOracleAddress(), req, payment);
-  }
+    packageInsurance.transfer(msg.value);
 
-  function fulfillFirstWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
-    linkAmount--;
-    emit successNodeResponse(true, _precipMM);
-    firstHours = _precipMM;
-  }
-
-  function fulfillWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
-    linkAmount--;
-    emit successNodeResponse(true, _precipMM);
-    if(_precipMM >= 10){
-      totalRainyHours++;
-    }
-    hourlyState.push(_precipMM);
-  }
-
-	function processInsurance() public onlyManager {
-		require(paid == false);
-		if(totalRainyHours > 0){
-			compensation = (price * totalRainyHours / times.length) + price + (rate * price / 100);
-    }
-	}
-
-  function payInsurance() public payable onlyManager {
-    require(paid == false);
-		require(msg.value > compensation * 1 wei);
-    buyer.transfer(compensation);
-		paid = true;
-  }
-
-	function withDrawAllEther() public payable onlyManager {
-		manager.transfer(address(this).balance);
-	}
-
-  function withDrawAllLINK() public onlyManager {
-    require(linkAmount > 0);
     LinkTokenInterface link = LinkTokenInterface(0x20fE562d797A42Dcb3399062AE9546cd06f63280);
-    link.transfer(manager, linkAmount * LINK);
-    linkAmount = 0;
+    link.transfer(packageInsurance, linkAmount * LINK);
+
+    if(contractsOfBuyer[msg.sender].exist != 1){
+      contractsOfBuyer[msg.sender].allInsurance.push(packageInsurance);
+      contractsOfBuyer[msg.sender].exist = 1;
+      allCustomers.push(msg.sender);
+
+    } else {
+      contractsOfBuyer[msg.sender].allInsurance.push(packageInsurance);
+    }
+
+    emit contractDeployed(packageInsurance);
   }
 
-  function getLINKBalance() public view onlyManager returns (uint256){
-    return linkAmount;
+  function getAllContract(address _buyer) public view returns(address[] memory) {
+    //require(msg.sender == _buyer || msg.sender == manager, "Permission Denided !");
+    return contractsOfBuyer[_buyer].allInsurance;
   }
 
-	function getBalance() public view onlyManager returns (uint256){
-		return address(this).balance;
-	}
+  function getAllCustomer() public view onlyManager returns(address[] memory) {
+    return allCustomers;
+  }
 
+  function getInsurancePackage(string memory _name) public view onlyManager returns(InsurancePackage memory) {
+    return (insurancePackage[_name]);
+  }
+
+  function addInsurancePackage(string memory _name, uint256 _priceUSD, uint256 rate) public onlyManager {
+    InsurancePackage memory package;
+
+    package.name = _name;
+    package.priceUSD = _priceUSD;
+    package.rate = rate;
+
+    insurancePackage[_name] = package;
+    allPackage.push(package);
+
+    emit AddPackage(true);
+  }
+
+  function setLINKAmount(uint256 _linkAmount) public onlyManager {
+    linkAmount = _linkAmount;
+  }
+
+   function getAllInsurancePackage() public view returns(InsurancePackage[] memory){
+     return allPackage;
+   }
   function() external payable {}
 }

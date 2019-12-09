@@ -1,4 +1,6 @@
 pragma solidity >=0.5.0 <0.6.0;
+pragma experimental ABIEncoderV2;
+
 import "https://github.com/tantv-918/Evi/blob/completeContract/contract/contracts/Evi.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/ChainlinkClient.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/vendor/Ownable.sol";
@@ -95,7 +97,7 @@ contract EviFactory is ChainlinkClient{
   }
 
   function getAllContract(address _buyer) public view returns(address[] memory) {
-    require(msg.sender == _buyer || msg.sender == manager, "Permission Denided !");
+    //require(msg.sender == _buyer || msg.sender == manager, "Permission Denided !");
     return contractsOfBuyer[_buyer].allInsurance;
   }
 
@@ -103,8 +105,8 @@ contract EviFactory is ChainlinkClient{
     return allCustomers;
   }
 
-  function getInsurancePackage(string memory _name) public view onlyManager returns(string memory, uint256, uint256) {
-    return (insurancePackage[_name].name, insurancePackage[_name].priceUSD, insurancePackage[_name].rate);
+  function getInsurancePackage(string memory _name) public view onlyManager returns(InsurancePackage memory) {
+    return (insurancePackage[_name]);
   }
 
   function addInsurancePackage(string memory _name, uint256 _priceUSD, uint256 rate) public onlyManager {
@@ -124,8 +126,8 @@ contract EviFactory is ChainlinkClient{
     linkAmount = _linkAmount;
   }
 
-  // function getAllInsurancePackage() public view onlyManager returns(string[] memory, uint256[], uint256[]){
-  //   //return allPackage;
-  // }
+   function getAllInsurancePackage() public view returns(InsurancePackage[] memory){
+     return allPackage;
+   }
   function() external payable {}
 }
