@@ -1,10 +1,10 @@
 pragma solidity >=0.5.0 <0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/ChainlinkClient.sol";
+import "chainlink/v0.5/contracts/ChainlinkClient.sol";
 import {
   SafeMath as SafeMath_Chainlink
-} from "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/vendor/SafeMath.sol";
+} from "chainlink/v0.5/contracts/vendor/SafeMath.sol";
 
 contract Evi is ChainlinkClient {
   using SafeMath_Chainlink for uint256;
