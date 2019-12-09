@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import HomePage from '@/views/HomePage';
+import CommonLayout from '@/Layouts/CommonLayout';
 
 Vue.use(Router);
 
@@ -10,8 +10,20 @@ export const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'layout-home',
-      component: HomePage
+      name: 'layout-common',
+      component: CommonLayout,
+      children: [
+        {
+          path: '/',
+          name: 'homepage',
+          component: () => import('./views/HomePage.vue')
+        },
+        {
+          path: '/create',
+          name: 'create-insurance',
+          component: () => import('./views/CreateInsurance.vue')
+        }
+      ]
     }
   ]
 });

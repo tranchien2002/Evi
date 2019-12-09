@@ -414,6 +414,7 @@ body
   .et_pb_pricing_tables_0
   .et_pb_pricing_table_button.et_pb_button:hover {
   padding: 0.3em 1em !important;
+  text-decoration: none;
 }
 body
   #page-container
