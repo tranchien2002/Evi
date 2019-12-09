@@ -3,7 +3,6 @@ pragma experimental ABIEncoderV2;
 
 import "https://github.com/tantv-918/Evi/blob/completeContract/contract/contracts/Evi.sol";
 import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/ChainlinkClient.sol";
-import "https://github.com/smartcontractkit/chainlink/blob/develop/evm/v0.5/contracts/vendor/Ownable.sol";
 
 contract EviFactory is ChainlinkClient{
   struct AllInsuranceOfBuyer{
