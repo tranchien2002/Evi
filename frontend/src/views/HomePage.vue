@@ -16,18 +16,9 @@
                       >
                         <div class="et_pb_text_inner">
                           <h1>
-                            <img
-                              src="@/assets/images/logo.png"
-                              alt="logo"
-                              title="logo"
-                              width="10%"
-                            />
+                            <img src="@/assets/images/logo.png" alt="logo" title="logo" width="10%">
                           </h1>
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscingelit. Integer et
-                            fringilla orci. Maecenas convallis nisl et massa consequat pellentesque.
-                            Vivamus sed condimentum enim.
-                          </p>
+                          <p>Let choose a suitable insurance package and fill out the information, leaving the rest to us!</p>
                         </div>
                       </div>
                     </div>
@@ -63,15 +54,10 @@
                   <div class="et_pb_module et_pb_fullwidth_image et_pb_fullwidth_image_0">
                     <img
                       data-cfsrc="@/assets/images/divider2.jpg"
-                      srcset="
-                        @/assets/images/divider2.jpg         3000w,
-                        @/assets/images/divider2-254x15.jpg   254w,
-                        @/assets/images/divider2-533x31.jpg   533w,
-                        @/assets/images/divider2-1080x62.jpg 1080w
-                      "
+                      srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                       sizes="(max-width: 3000px) 100vw, 3000px"
                       src="@/assets/images/divider2.jpg"
-                    />
+                    >
                   </div>
                 </div>
                 <div class="et_pb_section et_pb_section_4 et_pb_with_background et_section_regular">
@@ -83,9 +69,12 @@
                         class="et_pb_with_border et_pb_module et_pb_pricing_tables_0 et_pb_pricing clearfix et_pb_pricing_3 et_pb_no_featured_in_first_row et_pb_pricing_no_bullet"
                       >
                         <div class="et_pb_pricing_table_wrap" ref="signed" id="signed">
-                          <MyEvi :index="0" :onClick="showModalDetail" />
-                          <MyEvi :index="1" :onClick="showModalDetail" />
-                          <MyEvi :index="2" :onClick="showModalDetail" />
+                          <MyEvi
+                            v-for="(pack, index) in evies"
+                            :key="index"
+                            :instance="index.instance"
+                            :onClick="showModalDetail"
+                          ></MyEvi>
                         </div>
                       </div>
                     </div>
@@ -101,13 +90,13 @@
       <div class="cntr">
         <div class="radio-box">
           <label for="opt1" class="radio">
-            <input type="radio" name="rdo" id="opt1" class="hidden" />
+            <input type="radio" name="rdo" id="opt1" class="hidden">
             <span class="label" @click="scrollTo('#introduction')"></span>
           </label>
         </div>
         <div class="radio-box">
           <label for="opt2" class="radio">
-            <input type="radio" name="rdo" id="opt2" class="hidden" />
+            <input type="radio" name="rdo" id="opt2" class="hidden">
             <span class="label" @click="scrollTo('#signed')"></span>
           </label>
         </div>
@@ -151,12 +140,13 @@
 
 <script>
 /* eslint-disable no-console */
-import VueScrollTo from 'vue-scrollto';
-import InsurancePack from '@/components/InsurancePack';
-import PackList from '@/constants/InsurancePacks';
-import MyEvi from '@/components/MyEvi';
+import VueScrollTo from "vue-scrollto";
+import InsurancePack from "@/components/InsurancePack";
+import PackList from "@/constants/InsurancePacks";
+import MyEvi from "@/components/MyEvi";
+import { mapState } from "vuex";
 export default {
-  name: 'HomePage',
+  name: "HomePage",
   components: {
     InsurancePack,
     MyEvi
@@ -172,23 +162,25 @@ export default {
       return VueScrollTo.scrollTo(index, 500);
     },
     showModalDetail() {
-      this.$modal.show('detail-insurance');
+      this.$modal.show("detail-insurance");
     },
     hideModalDetail() {
-      this.$modal.hide('detail-insurance');
+      this.$modal.hide("detail-insurance");
     }
   },
   async created() {
     setTimeout(() => {
       this.show = true;
+      console.log(this.evies);
     }, 100);
 
-    if (this.$route.hash === '#signed') {
+    if (this.$route.hash === "#signed") {
       setTimeout(() => {
-        this.scrollTo('#signed');
+        this.scrollTo("#signed");
       }, 200);
     }
-  }
+  },
+  computed: { ...mapState("contract", ["evies"]) }
 };
 </script>
 <style lang="scss" scope>
@@ -196,7 +188,7 @@ export default {
   margin-top: 2rem;
 }
 .et_pb_text_inner > h1 {
-  font-family: 'Segoe UI' !important;
+  font-family: "Segoe UI" !important;
   font-weight: bold;
 }
 
@@ -226,7 +218,7 @@ export default {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 .radio {
   position: relative;
@@ -246,7 +238,7 @@ body {
   margin-top: 2rem;
 }
 .radio .label:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 3px;
   left: 3px;
@@ -262,10 +254,10 @@ body {
 .radio:hover .label:after {
   transform: scale(3.6);
 }
-input[type='radio']:checked + .label {
+input[type="radio"]:checked + .label {
   border-color: #225cff;
 }
-input[type='radio']:checked + .label:after {
+input[type="radio"]:checked + .label:after {
   transform: scale(1);
   transition: all 0.2s cubic-bezier(0.35, 0.9, 0.4, 0.9);
   opacity: 1;
