@@ -38,6 +38,7 @@
                               :price="pack.price"
                               :compensation="pack.compensation"
                               :description="pack.description"
+                              :descDetail="pack.descDetail"
                               :type="pack.type"
                               :index="index"
                               :logo="pack.logo"
