@@ -14,7 +14,7 @@
                   >
                     <div class="et_pb_text_inner">
                       <h1>
-                        <img src="@/assets/images/logo.png" alt="logo" title="logo" width="64" />
+                        <img src="@/assets/images/logo.png" alt="logo" title="logo" width="64">
                       </h1>
                     </div>
                   </div>
@@ -28,6 +28,7 @@
                   error-color="#ff4949"
                 >
                   <h3 slot="title" class="title-form">Insurance Details</h3>
+                  <h5 slot="title" class="title-form">{{this.contractInsurance.descDetail}}</h5>
                   <tab-content
                     title="Address"
                     icon="fas fa-map-marked"
@@ -149,10 +150,10 @@
                           </div>
                         </el-form-item>
                         <el-form-item label="Price">
-                          <b>{{ this.contractInsurance.price }}</b>
+                          <b>{{ this.contractInsurance.price }} $ ~ {{ this.ethConverted.toFixed(2) }} ETH</b>
                         </el-form-item>
-                        <el-form-item label="Compensation">
-                          <b>{{ this.contractInsurance.compensation }}</b>
+                        <el-form-item label="Highest compensation">
+                          <b>{{ this.contractInsurance.compensation }} $</b>
                         </el-form-item>
                       </el-form>
                     </div>
@@ -167,7 +168,7 @@
                   srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                   sizes="(max-width: 3000px) 100vw, 3000px"
                   src="@/assets/images/divider2.jpg"
-                />
+                >
               </div>
             </div>
           </div>
@@ -180,7 +181,7 @@
 <script>
 import { FormWizard, TabContent } from "vue-form-wizard";
 import "vue-form-wizard/dist/vue-form-wizard.min.css";
-
+import { mapActions } from "vuex";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 
@@ -197,13 +198,15 @@ export default {
         timeStart: null,
         timeEnd: null,
         price: null,
-        compensation: null
+        compensation: null,
+        descDetail: ""
       },
       checkFrom2: {
         date: true,
         timeStart: true,
         timeEnd: true
-      }
+      },
+      ethConverted: 0
     };
   },
   components: {
@@ -241,8 +244,41 @@ export default {
     }
   },
   methods: {
-    onComplete: function() {
-      localStorage.removeItem("contractInsurance");
+    ...mapActions("contract", ["createEvi"]),
+    onComplete: async function() {
+      let rawEvi = JSON.parse(localStorage.getItem("contractInsurance"));
+      let times = "";
+      for (let i = 0; i < 24; i++) {
+        if (i >= parseInt(rawEvi.timeStart) && i <= parseInt(rawEvi.timeEnd)) {
+          times += "1";
+        } else {
+          times += "0";
+        }
+      }
+      let response = await fetch(
+        "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
+      );
+      let eth2usd;
+      if (response.ok) {
+        eth2usd = await response.json();
+      } else {
+        alert("HTTP-Error: " + response.status);
+      }
+      let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
+      await this.createEvi({
+        location: rawEvi.address,
+        date: rawEvi.date,
+        times: times,
+        priceWei: priceWei,
+        packageName: rawEvi.type,
+        link: "0x0000000000000000000000000000000000000000"
+      })
+        .then(() => {
+          localStorage.removeItem("contractInsurance");
+        })
+        .catch(e => {
+          console.log(e);
+        });
     },
     notBeforeTenDay(date) {
       return date < tenDay;
@@ -297,9 +333,27 @@ export default {
         JSON.stringify(this.contractInsurance)
       );
       console.log(JSON.stringify(this.contractInsurance));
+    },
+    async convertUsd2Eth() {
+      let rawEvi = JSON.parse(localStorage.getItem("contractInsurance"));
+      let response = await fetch(
+        "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
+      );
+      let eth2usd;
+      if (response.ok) {
+        eth2usd = await response.json();
+      } else {
+        console.log("HTTP-Error: " + response.status);
+      }
+
+      let priceWei = rawEvi.price / eth2usd["USD"];
+      this.ethConverted = priceWei;
     }
   },
   created() {
+    setInterval(async () => {
+      await this.convertUsd2Eth();
+    }, 5000);
     if (this.checkPropertiesNull(this.contractInsurance)) {
       this.contractInsurance = JSON.parse(
         localStorage.getItem("contractInsurance")
@@ -321,6 +375,7 @@ export default {
   font-size: 1em;
   color: aliceblue;
   text-align: left;
+  width: 200px;
 }
 .el-form-item b {
   font-size: 1.5em;
@@ -334,6 +389,11 @@ span.stepTitle {
   color: aliceblue;
 }
 h3.title-form {
+  color: aliceblue;
+  font-family: "Apple Color Emoji";
+  font-weight: bold;
+}
+h5.title-form {
   color: aliceblue;
   font-family: "Apple Color Emoji";
   font-weight: bold;
