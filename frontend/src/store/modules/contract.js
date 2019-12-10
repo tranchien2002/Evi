@@ -8,7 +8,6 @@ const state = {
   balance: 0,
   factory: null,
   evies: [],
-  contracts: [],
   insurances: [],
   customers: []
 };
@@ -24,9 +23,6 @@ const mutations = {
   },
   setMyEvies(state, payload) {
     state.evies = payload.evies;
-  },
-  setContracts(state, payload) {
-    state.contracts = payload.contracts;
   },
   setInsurances(state, payload) {
     state.insurances = payload.insurances;
