@@ -16,7 +16,7 @@ contract EviFactory is ChainlinkClient{
     uint256 rate;
   }
 
-  address payable manager;
+  address payable public manager;
 
   mapping (address => AllInsuranceOfBuyer) public contractsOfBuyer;
   mapping (string => InsurancePackage) public insurancePackage;
@@ -27,7 +27,6 @@ contract EviFactory is ChainlinkClient{
 
   constructor() public {
     manager = msg.sender;
-    setPublicChainlinkToken();
 
     InsurancePackage memory pack1;
     pack1.name = "Silver";

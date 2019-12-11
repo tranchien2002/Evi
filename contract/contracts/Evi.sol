@@ -37,6 +37,7 @@ contract Evi is ChainlinkClient {
 
   uint256 public etherPrice;
   int256 public firstHours;
+  bool public isQueryWeather = false;
 
   event successNodeResponse(
     bool success,
@@ -70,7 +71,7 @@ contract Evi is ChainlinkClient {
     manager = _manager;
 
     bytes memory timesbyte = bytes(_times);
-    for(uint i; i < 24; i++){
+    for(uint i; i<24; i++){
       if(timesbyte[i] == "1") {
         times.push(tempTimes[i]);
       }
@@ -111,14 +112,15 @@ contract Evi is ChainlinkClient {
 
   function fulfillPrice(bytes32 _requestId, uint256 _etherPrice) public recordChainlinkFulfillment(_requestId) {
     linkAmount--;
-    etherPrice = _etherPrice;
     emit successPrice(true, _etherPrice);
+    etherPrice = _etherPrice;
   }
 
   function queryWeather() public {
     require(paid == false);
+    require(isQueryWeather == false);
     uint arrayLength = times.length;
-    for (uint i = 0; i < arrayLength; i++) {
+    for (uint i=0; i<arrayLength; i++) {
       Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillWeather.selector);
       req.add("q", location);
       req.add("date", date);
@@ -132,47 +134,29 @@ contract Evi is ChainlinkClient {
       req.addInt("times", 100);
       sendChainlinkRequestTo(chainlinkOracleAddress(), req, payment);
     }
-  }
 
-  function queryFirstHours() public {
-      Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillFirstWeather.selector);
-      req.add("q", location);
-      req.add("date", date);
-      req.add("tp", "1");
-      req.add("copyPath", "data.weather.0.hourly.0.precipMM");
-      req.addInt("times", 100);
-      sendChainlinkRequestTo(chainlinkOracleAddress(), req, payment);
-  }
-
-  function fulfillFirstWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
-    linkAmount--;
-    firstHours = _precipMM;
-    emit successNodeResponse(true, _precipMM);
+    isQueryWeather = true;
   }
 
   function fulfillWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
     linkAmount--;
     emit successNodeResponse(true, _precipMM);
-    if(_precipMM >= 10){
+    if(_precipMM >= 100){
       totalRainyHours++;
     }
     hourlyState.push(_precipMM);
   }
 
-	function processInsurance() public onlyManager {
-		require(paid == false);
-		if(totalRainyHours > 0){
-			compensation = (price * totalRainyHours / times.length) + price + (rate * price / 100);
-    }
-	}
-
   function payInsurance() public payable onlyManager {
     require(paid == false);
-		require(msg.value + address(this).balance >= compensation * 1 wei);
+    require(isQueryWeather == true);
+    require(totalRainyHours > 0);
 
-    paid = true;
+		compensation = (price * totalRainyHours / times.length) + price + (rate * price / 100);
+
+		require(msg.value + address(this).balance >= compensation);
     buyer.transfer(compensation);
-		
+		paid = true;
   }
 
 	function withDrawAllEther() public payable onlyManager {
@@ -182,8 +166,8 @@ contract Evi is ChainlinkClient {
   function withDrawAllLINK() public onlyManager {
     require(linkAmount > 0);
     LinkTokenInterface link = LinkTokenInterface(0x20fE562d797A42Dcb3399062AE9546cd06f63280);
-    linkAmount = 0;
     link.transfer(manager, linkAmount * LINK);
+    linkAmount = 0;
   }
 
   function getLINKBalance() public view onlyManager returns (uint256){
