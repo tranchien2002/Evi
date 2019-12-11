@@ -37,6 +37,7 @@ contract Evi is ChainlinkClient {
 
   uint256 public etherPrice;
   int256 public firstHours;
+  bool public isQueryWeather = false;
 
   event successNodeResponse(
     bool success,
@@ -117,6 +118,7 @@ contract Evi is ChainlinkClient {
 
   function queryWeather() public {
     require(paid == false);
+    require(isQueryWeather == false);
     uint arrayLength = times.length;
     for (uint i=0; i<arrayLength; i++) {
       Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillWeather.selector);
@@ -132,43 +134,27 @@ contract Evi is ChainlinkClient {
       req.addInt("times", 100);
       sendChainlinkRequestTo(chainlinkOracleAddress(), req, payment);
     }
-  }
 
-  function queryFirstHours() public {
-      Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillFirstWeather.selector);
-      req.add("q", location);
-      req.add("date", date);
-      req.add("tp", "1");
-      req.add("copyPath", "data.weather.0.hourly.0.precipMM");
-      req.addInt("times", 100);
-      sendChainlinkRequestTo(chainlinkOracleAddress(), req, payment);
-  }
-
-  function fulfillFirstWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
-    linkAmount--;
-    emit successNodeResponse(true, _precipMM);
-    firstHours = _precipMM;
+    isQueryWeather = true;
   }
 
   function fulfillWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
     linkAmount--;
     emit successNodeResponse(true, _precipMM);
-    if(_precipMM >= 10){
+    if(_precipMM >= 100){
       totalRainyHours++;
     }
     hourlyState.push(_precipMM);
   }
 
-	function processInsurance() public onlyManager {
-		require(paid == false);
-		if(totalRainyHours > 0){
-			compensation = (price * totalRainyHours / times.length) + price + (rate * price / 100);
-    }
-	}
-
   function payInsurance() public payable onlyManager {
     require(paid == false);
-		require(msg.value + address(this).balance >= compensation * 1 wei);
+    require(isQueryWeather == true);
+    require(totalRainyHours > 0);
+
+		compensation = (price * totalRainyHours / times.length) + price + (rate * price / 100);
+
+		require(msg.value + address(this).balance >= compensation);
     buyer.transfer(compensation);
 		paid = true;
   }

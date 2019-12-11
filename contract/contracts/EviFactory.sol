@@ -16,7 +16,7 @@ contract EviFactory is ChainlinkClient{
     uint256 rate;
   }
 
-  address payable manager;
+  address payable public manager;
 
   mapping (address => AllInsuranceOfBuyer) public contractsOfBuyer;
   mapping (string => InsurancePackage) public insurancePackage;
