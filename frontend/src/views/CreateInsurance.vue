@@ -1,5 +1,18 @@
 <template>
   <div id="main-content">
+    <div :class="preloadPage ? 'preloader' : ''">
+      <svg class="circular" viewBox="25 25 50 50">
+        <circle
+          class="path"
+          cx="50"
+          cy="50"
+          r="20"
+          fill="none"
+          stroke-width="2"
+          stroke-miterlimit="10"
+        />
+      </svg>
+    </div>
     <article id="post-210302" class="post-210302 page type-page status-publish hentry">
       <div class="entry-content">
         <div id="et-boc" class="et-boc">
@@ -14,13 +27,22 @@
                   >
                     <div class="et_pb_text_inner">
                       <h1>
-                        <img src="@/assets/images/logo.png" alt="logo" title="logo" width="64">
+                        <router-link to="/">
+                          <img src="@/assets/images/logo.png" alt="logo" title="logo" width="64" />
+                        </router-link>
                       </h1>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="et_pb_row et_pb_row_1">
+              <div class="et_pb_row et_pb_row_1 et_pb_row_1_create">
+                <a class="fill-button">
+                  <router-link class="fill-button-hover" tag="span" to="/">
+                    <span class="fill-button-text">
+                      <i class="fas fa-home">Home</i>
+                    </span>
+                  </router-link>
+                </a>
                 <form-wizard
                   @on-complete="onComplete"
                   shape="circle"
@@ -131,31 +153,74 @@
                   </tab-content>
                   <tab-content title="Check Information" icon="fas fa-clipboard-check">
                     <div class="source">
-                      <el-form ref="form" label-width="120px">
-                        <el-form-item label="Address">
-                          <b>{{ this.contractInsurance.address }}</b>
-                        </el-form-item>
-                        <el-form-item label="Date">
-                          <b>{{ this.contractInsurance.date }}</b>
-                        </el-form-item>
-                        <el-form-item label="Time">
-                          <div class="row">
-                            <div class="col-2 text-left">
-                              <b>{{ this.contractInsurance.timeStart }}h</b>
+                      <b-row>
+                        <div class="col-12 col-lg-7 source-left" style="margin-bottom: 2rem">
+                          <b-embed
+                            type="iframe"
+                            aspect="16by9"
+                            :class="`mapGoogle`"
+                            :src="
+                              `https://maps.google.com/maps?amp;hl=en&amp;q=${contractInsurance.address}+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed`
+                            "
+                          ></b-embed>
+                        </div>
+                        <div class="col-12 col-lg-5 source-right">
+                          <el-form ref="form" label-width="140px">
+                            <div class="row form-group">
+                              <div class="col-12 col-md-4">
+                                <label>Address :</label>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <b>{{ this.contractInsurance.address }}</b>
+                              </div>
                             </div>
-                            <el-col class="line" :span="2" style="color:white">-</el-col>
-                            <div class="col-2 text-left">
-                              <b>{{ this.contractInsurance.timeEnd }}h</b>
+                            <div class="row form-group">
+                              <div class="col-12 col-md-4">
+                                <label>Date :</label>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <b>{{ this.contractInsurance.date }}</b>
+                              </div>
                             </div>
-                          </div>
-                        </el-form-item>
-                        <el-form-item label="Price">
-                          <b>{{ this.contractInsurance.price }} $ ~ {{ this.ethConverted.toFixed(2) }} ETH</b>
-                        </el-form-item>
-                        <el-form-item label="Highest compensation">
-                          <b>{{ this.contractInsurance.compensation }} $</b>
-                        </el-form-item>
-                      </el-form>
+                            <div class="row form-group">
+                              <div class="col-12 col-md-4">
+                                <label>Time :</label>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <div class="row">
+                                  <div class="col-2 text-left">
+                                    <b>{{ this.contractInsurance.timeStart }}h</b>
+                                  </div>
+                                  <el-col
+                                    class="line"
+                                    :span="2"
+                                    style="color:white; text-align: center;"
+                                  >-</el-col>
+                                  <div class="col-2 text-left">
+                                    <b>{{ this.contractInsurance.timeEnd }}h</b>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row form-group">
+                              <div class="col-12 col-md-4">
+                                <label>Price :</label>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <b>{{ formatPrice }} $ ~ {{ this.ethConverted.toFixed(2) }} ETH</b>
+                              </div>
+                            </div>
+                            <div class="row form-group">
+                              <div class="col-12 col-md-4">
+                                <label>Compensation:</label>
+                              </div>
+                              <div class="col-12 col-md-8">
+                                <b>{{ formatCompensation }} $</b>
+                              </div>
+                            </div>
+                          </el-form>
+                        </div>
+                      </b-row>
                     </div>
                   </tab-content>
                 </form-wizard>
@@ -168,7 +233,7 @@
                   srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                   sizes="(max-width: 3000px) 100vw, 3000px"
                   src="@/assets/images/divider2.jpg"
-                >
+                />
               </div>
             </div>
           </div>
@@ -192,6 +257,7 @@ export default {
   name: "create-insurance",
   data() {
     return {
+      preloadPage: true,
       contractInsurance: {
         address: null,
         date: null,
@@ -243,9 +309,22 @@ export default {
       this.saveLocalStorage();
     }
   },
+  computed: {
+    formatPrice: function() {
+      return this.contractInsurance.price
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    },
+    formatCompensation: function() {
+      return this.contractInsurance.compensation
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+  },
   methods: {
     ...mapActions("contract", ["createEvi"]),
     onComplete: async function() {
+      this.preloadPage = true;
       let rawEvi = JSON.parse(localStorage.getItem("contractInsurance"));
       let times = "";
       for (let i = 0; i < 24; i++) {
@@ -264,7 +343,11 @@ export default {
       } else {
         alert("HTTP-Error: " + response.status);
       }
-      let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
+      // let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
+      let priceWei = (
+        ((rawEvi.price / eth2usd["USD"]) * 10 ** 18) /
+        100
+      ).toString();
       await this.createEvi({
         location: rawEvi.address,
         date: rawEvi.date,
@@ -274,9 +357,12 @@ export default {
         link: "0x0000000000000000000000000000000000000000"
       })
         .then(() => {
+          this.preloadPage = false;
           localStorage.removeItem("contractInsurance");
+          this.$router.push({ name: "homepage", hash: "#signed" });
         })
         .catch(e => {
+          this.preloadPage = false;
           console.log(e);
         });
     },
@@ -332,10 +418,9 @@ export default {
         "contractInsurance",
         JSON.stringify(this.contractInsurance)
       );
-      console.log(JSON.stringify(this.contractInsurance));
     },
     async convertUsd2Eth() {
-      let rawEvi = JSON.parse(localStorage.getItem("contractInsurance"));
+      let rawEvi = this.contractInsurance;
       let response = await fetch(
         "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
       );
@@ -351,22 +436,35 @@ export default {
     }
   },
   created() {
-    setInterval(async () => {
-      await this.convertUsd2Eth();
-    }, 5000);
     if (this.checkPropertiesNull(this.contractInsurance)) {
       this.contractInsurance = JSON.parse(
         localStorage.getItem("contractInsurance")
       );
+      setInterval(async () => {
+        await this.convertUsd2Eth();
+      }, 5000);
     }
+    setTimeout(() => {
+      this.preloadPage = false;
+    }, 500);
   }
 };
 </script>
 
-<style>
+<style lang="scss" scope>
+.embed-responsive {
+  height: 100%;
+}
 .source {
-  width: 50%;
-  margin: 0 auto;
+  padding: 0.5rem;
+  margin: 0.7rem;
+}
+.source-right {
+  padding-left: 2.5rem;
+}
+.source-left {
+  margin-bottom: 2rem;
+  padding-left: 3rem;
 }
 .text-left {
   text-align: left;
@@ -377,8 +475,8 @@ export default {
   text-align: left;
   width: 200px;
 }
-.el-form-item b {
-  font-size: 1.5em;
+.form-group b {
+  font-size: 1.1em;
   color: aliceblue;
 }
 
@@ -391,23 +489,20 @@ span.stepTitle {
 h3.title-form {
   color: aliceblue;
   font-family: "Apple Color Emoji";
-  font-weight: bold;
 }
 h5.title-form {
   color: aliceblue;
   font-family: "Apple Color Emoji";
-  font-weight: bold;
 }
-div.form-group > label {
-  color: aliceblue;
+div.form-group label {
+  color: rgb(190, 196, 202);
 }
 .el-form-item__label {
   color: aliceblue;
 }
 
-.et_pb_row_1.et_pb_row {
-  padding-top: 40px !important;
-  padding-top: 40px;
+.et_pb_row_1.et_pb_row.et_pb_row_1_create {
+  padding-top: 10px !important;
   margin-top: 25px !important;
 }
 .time-choose {
@@ -427,5 +522,90 @@ div.form-group > label {
 
 .input__inner > .mx-input-wrapper > .mx-input {
   border-color: #f56c6c;
+}
+
+/* fill button */
+.fill-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 110px;
+  height: 30px;
+  border: 1px solid #35495e;
+  text-align: center;
+  box-sizing: border-box;
+  color: #35495e;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 28px;
+  font-family: "arial";
+  border-radius: 4px;
+  margin-left: 10px;
+}
+.fill-button > span {
+  display: block;
+}
+.fill-button > .fill-button-hover:after,
+.fill-button > .fill-button-hover:before {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  display: block;
+  content: "";
+  width: 0;
+  height: 30px;
+}
+.fill-button > .fill-button-hover:after {
+  background-color: #35495e;
+  transform: skewX(45deg);
+  transform-origin: center center;
+  transition: all 0.35s, opacity 0.4s;
+  left: 50%;
+}
+.fill-button .fill-button-hover:before {
+  background-color: #42b883;
+  transition: opacity 1s;
+}
+
+.fill-button .fill-button-text {
+  z-index: 1;
+  position: relative;
+  color: aliceblue;
+  transition: color 0.35s;
+}
+.fill-button:hover .fill-button-text {
+  color: #42b883;
+}
+.fill-button .fill-button-hover:hover:after {
+  opacity: 1;
+  left: 2%;
+  width: 95%;
+  transform: skewX(45deg);
+}
+.fill-button > .fill-button-hover:hover:before {
+  opacity: 1;
+  left: 0;
+  width: 100%;
+}
+
+.el-input input,
+.mx-input-wrapper input {
+  padding-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .source {
+    padding: 0rem;
+    margin: 0rem;
+  }
+  .source-right {
+    padding-left: 1.5rem;
+  }
+  .source-left {
+    padding-left: 15px;
+  }
+  .form-group > div.col-12.col-md-8 {
+    padding-left: 2rem;
+  }
 }
 </style>
