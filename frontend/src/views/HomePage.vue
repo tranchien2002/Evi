@@ -10,7 +10,7 @@
           fill="none"
           stroke-width="2"
           stroke-miterlimit="10"
-        />
+        ></circle>
       </svg>
     </div>
     <div id="et-main-area">
@@ -32,12 +32,10 @@
                       >
                         <div class="et_pb_text_inner">
                           <h1>
-                            <img src="@/assets/images/logo.png" alt="logo" title="logo" />
+                            <img src="@/assets/images/logo.png" alt="logo" title="logo">
                           </h1>
-                          <p>
-                            Let choose a suitable insurance package and fill out the information,
-                            leaving the rest to us!
-                          </p>
+                          <h1>Event Insurance</h1>
+                          <p>Let choose a suitable insurance package and fill out the information, leaving the rest to us!</p>
                         </div>
                       </div>
                     </div>
@@ -77,7 +75,7 @@
                       srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                       sizes="(max-width: 3000px) 100vw, 3000px"
                       src="@/assets/images/divider2.jpg"
-                    />
+                    >
                   </div>
                 </div>
                 <div class="et_pb_section et_pb_section_4 et_pb_with_background et_section_regular">
@@ -92,7 +90,7 @@
                           <MyEvi
                             v-for="(pack, index) in evies"
                             :key="index"
-                            :instance="index.instance"
+                            :instance="pack.instance"
                             :onClick="showModalDetail"
                           ></MyEvi>
                         </div>
@@ -110,46 +108,63 @@
       <div class="cntr">
         <div class="radio-box">
           <label for="opt1" class="radio">
-            <input type="radio" name="rdo" id="opt1" class="hidden" />
+            <input type="radio" name="rdo" id="opt1" class="hidden">
             <span class="label" @click="scrollTo('#introduction')"></span>
           </label>
         </div>
         <div class="radio-box">
           <label for="opt2" class="radio">
-            <input type="radio" name="rdo" id="opt2" class="hidden" />
+            <input type="radio" name="rdo" id="opt2" class="hidden">
             <span class="label" @click="scrollTo('#signed')"></span>
           </label>
         </div>
       </div>
     </div>
-    <modal name="detail-insurance" transition="pop-out">
+    <modal name="detail-insurance" transition="pop-out" :scrollable="true" height="auto">
       <div class="box">
         <div class="box-part-left" id="bp-left">
           <div class="partition" id="partition-register">
-            <div class="partition-title">Thông Tin Chi Tiêt</div>
-            <div class="partition-form">
-              <form>
-                <div>
-                  <label>Họ và Tên :</label>
-                  <p>
-                    <b>Nguyen Van A</b>
-                  </p>
+            <div class="partition-title">Detail information</div>
+            <div class="row">
+              <div class="col-6 map-modal">
+                <b-embed
+                  type="iframe"
+                  aspect="16by9"
+                  :class="`mapGoogle`"
+                  :src="`https://maps.google.com/maps?amp;hl=en&amp;q=${eviChosen.location}+(My%20Business%20Name)&amp;ie=UTF8&amp;t=&amp;z=14&amp;iwloc=B&amp;output=embed`"
+                ></b-embed>
+              </div>
+              <div class="col-6">
+                <div class="partition-form">
+                  <form>
+                    <div>
+                      <label>Location:</label>
+                      <p>
+                        <b>{{eviChosen.location}}</b>
+                      </p>
+                    </div>
+                    <div>
+                      <label>Date:</label>
+                      <p>
+                        <b>{{eviChosen.date}}</b>
+                      </p>
+                    </div>
+                    <div>
+                      <label>Time:</label>
+                      <p>
+                        <b>From: {{eviChosen.timeStart}}:00 to {{eviChosen.timeEnd}}:00</b>
+                      </p>
+                    </div>
+                    <div>
+                      <label>Type</label>
+                      <p>
+                        <b>{{eviChosen.type}}</b>
+                      </p>
+                    </div>
+                  </form>
+                  <div style="margin-top: 42px"></div>
                 </div>
-                <div>
-                  <label>Ngày Mua Bảo Hiểm:</label>
-                  <p>
-                    <b>01/01/2019 - 01/10/2020</b>
-                  </p>
-                </div>
-                <div>
-                  <label>Gói bảo hiểm:</label>
-                  <p>
-                    <b>Basic</b>
-                  </p>
-                </div>
-              </form>
-
-              <div style="margin-top: 42px"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -175,7 +190,8 @@ export default {
     return {
       preloadPage: true,
       show: false,
-      packList: PackList
+      packList: PackList,
+      eviChosen: {}
     };
   },
   computed: { ...mapState("contract", ["evies"]) },
@@ -184,7 +200,8 @@ export default {
     scrollTo(index) {
       return VueScrollTo.scrollTo(index, 500);
     },
-    showModalDetail() {
+    async showModalDetail(event) {
+      this.eviChosen = event.evi;
       this.$modal.show("detail-insurance");
     },
     hideModalDetail() {
@@ -417,5 +434,9 @@ $facebook_color: #3880ff;
   padding-top: 30px !important;
   margin-top: 60px !important;
   padding-bottom: 25px;
+}
+.map-modal {
+  padding-top: 40px;
+  padding-left: 30px;
 }
 </style>

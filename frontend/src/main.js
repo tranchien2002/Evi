@@ -13,7 +13,6 @@ import './styles.scss';
 
 Vue.use(BootstrapVue);
 Vue.use(VModal);
-
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false;

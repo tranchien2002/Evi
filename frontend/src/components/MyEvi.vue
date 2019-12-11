@@ -14,13 +14,13 @@
     <div class="et_pb_pricing_content">
       <ul class="et_pb_pricing">
         <li>
-          <span>Nguyen Van A</span>
+          <span>Location: {{evi.location}}</span>
         </li>
         <li>
-          <span>01/01/2019 - 01/10/2020</span>
+          <span>Date: {{evi.date}}</span>
         </li>
         <li>
-          <span>Basic</span>
+          <span>Type: {{evi.type}}</span>
         </li>
       </ul>
     </div>
@@ -28,15 +28,22 @@
       <a
         class="et_pb_button et_pb_pricing_table_button"
         href="javascript:void(0)"
-        @click="onClick"
+        @click="clicked"
       >Detail</a>
     </div>
   </div>
 </template>
 <script>
+/* eslint-disable no-console */
+import PackList from "@/constants/InsurancePacks";
 export default {
   name: "myEvi",
-  props: { index: Number, onClick: Function },
+  props: { index: Number, onClick: Function, instance: Object },
+  data() {
+    return {
+      evi: {}
+    };
+  },
   computed: {
     classType: function() {
       return (
@@ -45,6 +52,29 @@ export default {
         " insurance-package"
       );
     }
+  },
+  methods: {
+    async clicked() {
+      this.onClick({
+        evi: this.evi
+      });
+    }
+  },
+  async created() {
+    let evi = {};
+    evi.location = await this.instance.methods.location().call();
+    evi.price = await this.instance.methods.price().call();
+    evi.date = await this.instance.methods.date().call();
+    let timeString = await this.instance.methods.timeString().call();
+    evi.timeStart = timeString.indexOf("1");
+    evi.timeEnd = timeString.lastIndexOf("1");
+    let rate = await this.instance.methods.rate().call();
+    PackList.forEach(e => {
+      if (e.rate == rate) {
+        evi.type = e.type;
+      }
+    });
+    this.evi = evi;
   }
 };
 </script>
