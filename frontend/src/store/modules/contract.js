@@ -9,7 +9,8 @@ const state = {
   factory: null,
   evies: [],
   insurances: [],
-  customers: []
+  customers: [],
+  manager: null
 };
 
 const mutations = {
@@ -29,6 +30,9 @@ const mutations = {
   },
   setCustomers(state, payload) {
     state.customers = payload.customers;
+  },
+  setManager(state, payload) {
+    state.manager = payload.manager;
   }
 };
 
@@ -52,8 +56,10 @@ const actions = {
     const factory = new web3.eth.Contract(Factory.abi, Factory.networks[networkId].address, {
       transactionConfirmationBlocks: 1
     });
+    let manager = await factory.methods.manager().call();
     let factoryFunc = () => factory;
     commit('setFactory', { factoryFunc });
+    commit('setManager', { manager });
   },
 
   async getAllEvi({ commit, state }) {

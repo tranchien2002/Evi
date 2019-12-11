@@ -19,7 +19,13 @@
           <div class="entry-content">
             <div id="et-boc" class="et-boc">
               <div class="et_builder_inner_content et_pb_gutters3">
-                <router-link to="/admin" class="btn-admin" v-b-tooltip.hover title="Page Admin">
+                <router-link
+                  v-if="manager === account"
+                  to="/admin"
+                  class="btn-admin"
+                  v-b-tooltip.hover
+                  title="Page Admin"
+                >
                   <i class="fas fa-user-shield"></i>
                 </router-link>
                 <div class="et_pb_section et_pb_section_0 et_section_regular">
@@ -194,7 +200,7 @@ export default {
       eviChosen: {}
     };
   },
-  computed: { ...mapState("contract", ["evies"]) },
+  computed: { ...mapState("contract", ["evies", "manager", "account"]) },
   methods: {
     ...mapActions("contract", ["setWeb3", "initContarct", "getAllEvi"]),
     scrollTo(index) {
