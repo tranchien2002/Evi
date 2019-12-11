@@ -10,7 +10,7 @@
           fill="none"
           stroke-width="2"
           stroke-miterlimit="10"
-        />
+        ></circle>
       </svg>
     </div>
     <article id="post-210302" class="post-210302 page type-page status-publish hentry">
@@ -28,7 +28,7 @@
                     <div class="et_pb_text_inner">
                       <h1>
                         <router-link to="/">
-                          <img src="@/assets/images/logo.png" alt="logo" title="logo" width="64" />
+                          <img src="@/assets/images/logo.png" alt="logo" title="logo" width="64">
                         </router-link>
                       </h1>
                     </div>
@@ -233,7 +233,7 @@
                   srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                   sizes="(max-width: 3000px) 100vw, 3000px"
                   src="@/assets/images/divider2.jpg"
-                />
+                >
               </div>
             </div>
           </div>
@@ -343,11 +343,11 @@ export default {
       } else {
         alert("HTTP-Error: " + response.status);
       }
-      // let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
-      let priceWei = (
-        ((rawEvi.price / eth2usd["USD"]) * 10 ** 18) /
-        100
-      ).toString();
+      let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
+      // let priceWei = (
+      //   ((rawEvi.price / eth2usd["USD"]) * 10 ** 18) /
+      //   100
+      // ).toString();
       await this.createEvi({
         location: rawEvi.address,
         date: rawEvi.date,
