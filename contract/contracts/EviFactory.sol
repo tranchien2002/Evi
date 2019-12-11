@@ -27,6 +27,7 @@ contract EviFactory is ChainlinkClient{
 
   constructor() public {
     manager = msg.sender;
+    setPublicChainlinkToken();
 
     InsurancePackage memory pack1;
     pack1.name = "Silver";

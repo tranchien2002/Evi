@@ -70,7 +70,7 @@ contract Evi is ChainlinkClient {
     manager = _manager;
 
     bytes memory timesbyte = bytes(_times);
-    for(uint i; i<24; i++){
+    for(uint i; i < 24; i++){
       if(timesbyte[i] == "1") {
         times.push(tempTimes[i]);
       }
@@ -111,14 +111,14 @@ contract Evi is ChainlinkClient {
 
   function fulfillPrice(bytes32 _requestId, uint256 _etherPrice) public recordChainlinkFulfillment(_requestId) {
     linkAmount--;
-    emit successPrice(true, _etherPrice);
     etherPrice = _etherPrice;
+    emit successPrice(true, _etherPrice);
   }
 
   function queryWeather() public {
     require(paid == false);
     uint arrayLength = times.length;
-    for (uint i=0; i<arrayLength; i++) {
+    for (uint i = 0; i < arrayLength; i++) {
       Chainlink.Request memory req = buildChainlinkRequest(JOB_ID_WEATHER, address(this), this.fulfillWeather.selector);
       req.add("q", location);
       req.add("date", date);
@@ -146,8 +146,8 @@ contract Evi is ChainlinkClient {
 
   function fulfillFirstWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
     linkAmount--;
-    emit successNodeResponse(true, _precipMM);
     firstHours = _precipMM;
+    emit successNodeResponse(true, _precipMM);
   }
 
   function fulfillWeather(bytes32 _requestId, int256 _precipMM ) public recordChainlinkFulfillment(_requestId){
@@ -169,8 +169,10 @@ contract Evi is ChainlinkClient {
   function payInsurance() public payable onlyManager {
     require(paid == false);
 		require(msg.value + address(this).balance >= compensation * 1 wei);
+
+    paid = true;
     buyer.transfer(compensation);
-		paid = true;
+		
   }
 
 	function withDrawAllEther() public payable onlyManager {
@@ -180,8 +182,8 @@ contract Evi is ChainlinkClient {
   function withDrawAllLINK() public onlyManager {
     require(linkAmount > 0);
     LinkTokenInterface link = LinkTokenInterface(0x20fE562d797A42Dcb3399062AE9546cd06f63280);
-    link.transfer(manager, linkAmount * LINK);
     linkAmount = 0;
+    link.transfer(manager, linkAmount * LINK);
   }
 
   function getLINKBalance() public view onlyManager returns (uint256){
