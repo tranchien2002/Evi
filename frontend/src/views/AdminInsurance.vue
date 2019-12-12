@@ -102,6 +102,7 @@
                   <b-table
                     responsive
                     :items="items"
+                    :fields="fields"
                     :current-page="currentPage"
                     :per-page="perPage"
                     :filter="filter"
@@ -110,6 +111,10 @@
                     @filtered="onFiltered"
                   >
                     <template v-slot:cell(name)="row">{{ row.value.first }} {{ row.value.last }}</template>
+                    <template v-slot:cell(actions)="row">
+                      <el-button type="info" v-if="!row.item.paid" @click="proess">Proess</el-button>
+                      <el-button type="success" v-if="row.item.paid" @click="payment">Payment</el-button>
+                    </template>
 
                     <template v-slot:row-details="row">
                       <b-card>
@@ -170,23 +175,86 @@ export default {
       tabbar: false,
       items: [
         {
-          isActive: true,
-          age: 40,
-          name: { first: "Dickerson", last: "Macdonald" }
+          type: "Silver",
+          location: "Ansgarstr. 4, Wallenhorst, 49134",
+          date: "2019-10-20",
+          paid: false
         },
-        { isActive: false, age: 21, name: { first: "Larsen", last: "Shaw" } },
-        { isActive: false, age: 89, name: { first: "Geneva", last: "Wilson" } },
-        { isActive: true, age: 38, name: { first: "Jami", last: "Carney" } },
-        { isActive: false, age: 27, name: { first: "Essie", last: "Dunlap" } },
-        { isActive: true, age: 40, name: { first: "Thor", last: "Macdonald" } },
-        { isActive: false, age: 26, name: { first: "Mitzi", last: "Navarro" } },
         {
-          isActive: false,
-          age: 22,
-          name: { first: "Genevieve", last: "Wilson" }
+          type: "Gold",
+          location: "Weststr. 62, Emsdetten, 48282",
+          date: "2019-11-22",
+          paid: true
         },
-        { isActive: true, age: 38, name: { first: "John", last: "Carney" } },
-        { isActive: false, age: 29, name: { first: "Dick", last: "Dunlap" } }
+        {
+          type: "Gold",
+          location: "Antwerpener Str. 47, Berlin, 13353",
+          date: "2019-12-01",
+          paid: false
+        },
+        {
+          type: "Platinum",
+          location: "Dammkuhlenweg 1, Glandorf, 49219",
+          date: "2019-11-19",
+          paid: false
+        },
+        {
+          type: "Silver",
+          location: "An Der Umflut 7, Glandorf, 49219",
+          date: "2019-12-05",
+          paid: true
+        },
+        {
+          type: "Silver",
+          location: "Ansgarstr. 4, Wallenhorst, 49134",
+          date: "2019-12-10",
+          paid: false
+        },
+        {
+          type: "Gold",
+          location: "Lehmbergerstr. 2, Damp, 24351",
+          date: "2019-12-22",
+          paid: true
+        },
+        {
+          type: "Gold",
+          location: "Antwerpener Str. 47, Berlin, 13353",
+          date: "2019-12-22",
+          paid: true
+        },
+        {
+          type: "Platinum",
+          location: "Dammkuhlenweg 1, Glandorf, 49219",
+          date: "2019-12-22",
+          paid: false
+        },
+        {
+          type: "Platinum",
+          location: "Weststr. 62, Emsdetten, 48282",
+          date: "2019-12-22",
+          paid: true
+        }
+      ],
+      fields: [
+        {
+          key: "type",
+          label: "Type",
+          sortable: true,
+          sortDirection: "desc"
+        },
+        {
+          key: "location",
+          label: "Location",
+          sortable: true,
+          sortDirection: "desc"
+        },
+        {
+          key: "date",
+          label: "Date",
+          sortable: true,
+          sortDirection: "desc"
+        },
+        { key: "actions", label: "Actions" }
       ],
       totalRows: 1,
       currentPage: 1,
@@ -210,6 +278,28 @@ export default {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
+    },
+    payment() {
+      this.$swal({
+        title: "Are you sure Payment?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true
+      }).then(willDelete => {
+        if (willDelete) {
+          this.$swal("Payment was successful", {
+            icon: "success"
+          });
+        } else {
+          this.$swal("The action has been canceled!");
+        }
+      });
+    },
+    proess() {
+      this.preloadPage = true;
+      setTimeout(() => {
+        this.preloadPage = false;
+      }, 3000);
     }
   },
   created() {
@@ -228,5 +318,9 @@ a.nav-link {
   color: #ffffff !important;
   font-size: 20px;
   cursor: pointer;
+}
+.el-button--info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
 }
 </style>

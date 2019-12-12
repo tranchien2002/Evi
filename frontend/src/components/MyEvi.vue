@@ -9,7 +9,7 @@
         sizes="(max-width: 64px) 100vw, 64px"
         class="et-waypoint et_pb_animation_off"
         src="@/assets/images/cheque.png"
-      >
+      />
     </span>
     <div class="et_pb_pricing_content">
       <ul class="et_pb_pricing">
@@ -63,6 +63,7 @@ export default {
   async created() {
     let evi = {};
     evi.location = await this.instance.methods.location().call();
+    console.log(evi.location);
     evi.price = await this.instance.methods.price().call();
     evi.date = await this.instance.methods.date().call();
     let timeString = await this.instance.methods.timeString().call();

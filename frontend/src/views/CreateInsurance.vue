@@ -343,11 +343,11 @@ export default {
       } else {
         alert("HTTP-Error: " + response.status);
       }
-      let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
-      // let priceWei = (
-      //   ((rawEvi.price / eth2usd["USD"]) * 10 ** 18) /
-      //   100
-      // ).toString();
+      // let priceWei = ((rawEvi.price / eth2usd["USD"]) * 10 ** 18).toString();
+      let priceWei = (
+        ((rawEvi.price / eth2usd["USD"]) * 10 ** 18) /
+        100
+      ).toString();
       await this.createEvi({
         location: rawEvi.address,
         date: rawEvi.date,
