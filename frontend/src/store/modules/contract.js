@@ -8,6 +8,7 @@ const state = {
   balance: 0,
   factory: null,
   evies: [],
+  eviesByAdmin: [],
   insurances: [],
   customers: []
 };
@@ -23,6 +24,9 @@ const mutations = {
   },
   setMyEvies(state, payload) {
     state.evies = payload.evies;
+  },
+  setAdminEvies(state, payload) {
+    state.eviesByAdmin = payload.eviesByAdmin;
   },
   setInsurances(state, payload) {
     state.insurances = payload.insurances;
@@ -77,6 +81,49 @@ const actions = {
     }
     commit('setMyEvies', { evies });
   },
+  async queryWeather({ state }, address) {
+    const account = await state.account;
+    const web3 = await state.web3();
+    const evi = new web3.eth.Contract(Evi.abi, address, {
+      transactionConfirmationBlocks: 1
+    });
+    evi.methods
+      .queryWeather()
+      .send({ from: account })
+      .then(() => {
+        console.log('query success');
+      })
+      .catch((e) => {
+        throw e;
+      });
+  },
+  async getAllEviesByAdmin({ commit, state }) {
+    const factory = await state.factory();
+    const account = await state.account;
+    const web3 = await state.web3();
+    let customerAddresses = await factory.methods.getAllCustomer().call({ from: account });
+    let eviesByAdmin = [];
+    for (let i = 0; i < customerAddresses.length; i++) {
+      let eviAddresses = await factory.methods.getAllContract(customerAddresses[i]).call();
+      for (let i = 0; i < eviAddresses.length; i++) {
+        let evi = {
+          instance: null,
+          address: null
+        };
+
+        evi.instance = new web3.eth.Contract(Evi.abi, eviAddresses[i], {
+          transactionConfirmationBlocks: 1
+        });
+        let paid = await evi.instance.methods.paid().call({ from: account });
+
+        if (paid == false) {
+          evi.address = eviAddresses[i];
+          eviesByAdmin.push(evi);
+        }
+      }
+    }
+    commit('setAdminEvies', { eviesByAdmin });
+  },
 
   async createEvi({ state }, param) {
     const factory = await state.factory();
@@ -105,14 +152,12 @@ const actions = {
     const account = await state.account;
     let insurances = await factory.methods.getAllInsurancePackage().call({ from: account });
     commit('setInsurances', { insurances });
-    console.log(insurances);
   },
   async getAllCustomers({ commit, state }) {
     const factory = await state.factory();
     const account = await state.account;
     let customers = await factory.methods.getAllCustomer().call({ from: account });
     commit('setCustomers', { customers });
-    console.log(customers);
   },
   async addInsurancePackage({ state }, param) {
     const factory = await state.factory();
