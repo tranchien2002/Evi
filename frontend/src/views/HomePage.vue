@@ -10,7 +10,7 @@
           fill="none"
           stroke-width="2"
           stroke-miterlimit="10"
-        ></circle>
+        />
       </svg>
     </div>
     <div id="et-main-area">
@@ -38,7 +38,7 @@
                       >
                         <div class="et_pb_text_inner">
                           <h1>
-                            <img src="@/assets/images/logo.png" alt="logo" title="logo">
+                            <img src="@/assets/images/logo.png" alt="logo" title="logo" />
                           </h1>
                           <h1>Event Insurance</h1>
                           <p>Let choose a suitable insurance package and fill out the information, leaving the rest to us!</p>
@@ -81,13 +81,23 @@
                       srcset="@/assets/images/divider2.jpg         3000w, @/assets/images/divider2-254x15.jpg   254w, @/assets/images/divider2-533x31.jpg   533w, @/assets/images/divider2-1080x62.jpg 1080w"
                       sizes="(max-width: 3000px) 100vw, 3000px"
                       src="@/assets/images/divider2.jpg"
-                    >
+                    />
                   </div>
                 </div>
-                <div class="et_pb_section et_pb_section_4 et_pb_with_background et_section_regular">
+                <div
+                  class="et_pb_section et_pb_section_4 et_pb_with_background et_section_regular my-evi"
+                >
                   <div class="et_pb_row et_pb_row_3">
                     <div
-                      class="et_pb_column et_pb_column_4_4 et_pb_column_1 et_pb_css_mix_blend_mode_passthrough et-last-child"
+                      class="et_pb_module et_pb_text et_pb_text_0 et_pb_bg_layout_dark et_pb_text_align_center"
+                    >
+                      <div class="et_pb_text_inner" v-if="evies.length > 0">
+                        <h1>My Contract</h1>
+                        <hr />
+                      </div>
+                    </div>
+                    <div
+                      class="et_pb_column et_pb_column_4_4 et_pb_column_1 et_pb_css_mix_blend_mode_passthrough et-last-child box-evi"
                     >
                       <div
                         class="et_pb_with_border et_pb_module et_pb_pricing_tables_0 et_pb_pricing clearfix et_pb_pricing_3 et_pb_no_featured_in_first_row et_pb_pricing_no_bullet"
@@ -114,13 +124,13 @@
       <div class="cntr">
         <div class="radio-box">
           <label for="opt1" class="radio">
-            <input type="radio" name="rdo" id="opt1" class="hidden">
+            <input type="radio" name="rdo" id="opt1" class="hidden" />
             <span class="label" @click="scrollTo('#introduction')"></span>
           </label>
         </div>
         <div class="radio-box">
           <label for="opt2" class="radio">
-            <input type="radio" name="rdo" id="opt2" class="hidden">
+            <input type="radio" name="rdo" id="opt2" class="hidden" />
             <span class="label" @click="scrollTo('#signed')"></span>
           </label>
         </div>
@@ -444,5 +454,11 @@ $facebook_color: #3880ff;
 .map-modal {
   padding-top: 40px;
   padding-left: 30px;
+}
+.box-evi {
+  margin-top: 2.5rem;
+}
+.my-evi {
+  padding-top: 3rem !important;
 }
 </style>
