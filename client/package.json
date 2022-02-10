@@ -6,7 +6,7 @@
     "@babel/plugin-transform-react-jsx": "^7.7.4",
     "bootstrap": "^4.3.1",
     "glamor": "^2.20.40",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "qrcode.react": "^0.9.3",
     "react": "^16.8.6",
     "react-circular-progressbar": "^2.0.2",
